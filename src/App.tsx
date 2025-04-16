@@ -1,5 +1,4 @@
 // src/App.tsx
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Added Navigate
 import MainLayout from './components/layout/MainLayout';
 import HomePage from './pages/HomePage';

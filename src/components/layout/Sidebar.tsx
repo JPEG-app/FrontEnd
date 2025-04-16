@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaTwitter, FaHome, FaHashtag, FaBell, FaEnvelope, FaBookmark, FaListAlt, FaUser, FaEllipsisH } from 'react-icons/fa';
-import { mockUser, mockTweets } from '../../services/mockData'; 
+import { mockUser } from '../../services/mockData'; 
 
 const Sidebar: React.FC = () => {
   const navItems = [

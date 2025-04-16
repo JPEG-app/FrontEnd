@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Avatar from '../common/Avatar';
-import { mockUser, mockTweets } from '../../services/mockData'; // Use mock user for avatar
+import { mockUser } from '../../services/mockData'; // Use mock user for avatar
 import { Tweet } from '../../types';
 import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
 
@@ -19,7 +19,7 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
         id: `t${Date.now()}`, // Simple unique ID generation
         author: mockUser, // Use the mock logged-in user
         content: tweetContent,
-        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
     };
     onTweetPosted(newTweet);

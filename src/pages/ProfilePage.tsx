@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { User, Tweet } from '../types';
-import { mockUser, mockTweets } from '../services/mockData';
+import { mockUser } from '../services/mockData';
 import Avatar from '../components/common/Avatar';
 import TweetCard from '../components/tweet/TweetCard';
 import { FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
@@ -23,10 +23,10 @@ const ProfilePage: React.FC = () => {
       const foundUser = userHandle === mockUser.handle ? mockUser : null; // Simplified: only supports mockUser
       if (foundUser) {
         setUser(foundUser);
-        const tweets = mockTweets
-            .filter(tweet => tweet.author.handle === userHandle)
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setUserTweets(tweets);
+        // const tweets = mockTweets
+        //     .filter(tweet => tweet.author.handle === userHandle)
+        //     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        // setUserTweets(tweets);
       } else {
         // Handle user not found - maybe redirect or show error
         setUser(null);
