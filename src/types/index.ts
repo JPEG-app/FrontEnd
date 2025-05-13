@@ -1,32 +1,5 @@
 // src/types/index.ts
 
-// Represents the basic user info we can derive/use
-// Note: API only provides authorUsername, so name/handle are derived, avatar is default
-export interface AuthorInfo {
-  id: string; // Corresponds to userId from API
-  name: string; // Derived from authorUsername
-  handle: string; // Derived from authorUsername (e.g., @authorUsername)
-  avatarUrl?: string; // Will likely be undefined, triggering fallback in Avatar component
-}
-
-// Represents the structure needed by TweetCard, adapted from your API's FeedItem
-export interface Tweet {
-  id: string; // Use postId from API
-  author: AuthorInfo; // Contains derived author info + userId
-  title?: string; // postTitle from API (make optional if not always needed)
-  content: string; // postContent from API
-  createdAt: string; // createdAt from API (as ISO string)
-  // Stats are not provided by the API FeedItem model, so make optional or default
-  stats?: {
-    replies?: number;
-    retweets?: number;
-    likes?: number;
-    views?: number;
-  };
-  // Add other fields if your API sometimes includes them (e.g., imageUrl)
-  imageUrl?: string;
-}
-
 // Interface for the actual item coming directly from the API
 export interface ApiFeedItem {
   postId: string;
@@ -35,23 +8,50 @@ export interface ApiFeedItem {
   postTitle: string;
   postContent: string;
   createdAt: string; // Expecting ISO string from JSON
-  // Add other optional fields if they might exist in the API response
+  updatedAt: string; // Assuming API also sends this
   imageUrl?: string;
   likeCount?: number;
   commentCount?: number;
 }
 
-// Interface for the overall API response
-export interface ApiFeedResponse {
-  userId: string;
-  items: ApiFeedItem[];
-}
+// Interface for the overall API response (if it's an object with an items array)
+// If your API /feed returns an array directly, this specific type might not be used for that call.
+// Based on earlier discussion, /feed now returns ApiFeedItem[] directly.
+// export interface ApiFeedResponse {
+//   userId: string;
+//   items: ApiFeedItem[];
+// }
 
-// Keep User type if used elsewhere, but it's less relevant for the feed now
-export interface User {
+// Re-using Author from previous definitions, or define it here if it's different.
+// Let's assume a consistent Author type.
+export interface Author {
   id: string;
   name: string;
   handle: string;
+  avatarUrl?: string;
+}
+
+// Represents the structure needed by TweetCard
+export interface Tweet {
+  id: string;
+  author: Author; // Use the consistent Author type
+  title?: string;
+  content: string;
+  createdAt: Date;   // <<<< CHANGED TO Date
+  stats?: {
+    replies?: number;
+    retweets?: number;
+    likes?: number;
+    views?: number;
+  };
+  imageUrl?: string;
+}
+
+// User type, if needed elsewhere
+export interface User {
+  id: string;
+  name: string; // Or username
+  handle: string; // Or derived
   avatarUrl?: string;
   bio?: string;
   followingCount?: number;

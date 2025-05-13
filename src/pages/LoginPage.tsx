@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
             <FaTwitter size={40} /> {/* Or your app's logo */}
         </div>
 
-        <h1 className="text-2xl font-bold text-center">Log in to Your App</h1>
+        <h1 className="text-2xl font-bold text-center">Log in</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* Username/Email Input */}
@@ -114,3 +114,6 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+
+
+// application insights 

@@ -1,73 +1,66 @@
+// src/components/tweet/TweetCard.tsx
 import React from 'react';
+// Ensure imports are from your single types file
 import { Tweet } from '../../types';
-import { formatDistanceToNowStrict } from 'date-fns';
-import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaShareSquare } from 'react-icons/fa';
-import Avatar from '../common/Avatar';
-import { Link } from 'react-router-dom';
-import placeholderAvatar from '../../assets/avatar.png';
+import Avatar from '../common/Avatar'; // Adjust path
+import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaShareSquare } from 'react-icons/fa'; // Example icons
 
-interface TweetCardProps {
+export interface TweetCardProps {
   tweet: Tweet;
 }
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
-
-  let timeAgo = 'Date unknown';
-  let dateTitle = 'Date unknown';
-
-  if (tweet.createdAt && typeof tweet.createdAt === 'string') {
-    const date = new Date(tweet.createdAt);
-
-    if (!isNaN(date.getTime())) {
-      try {
-         timeAgo = formatDistanceToNowStrict(date, { addSuffix: false });
-         dateTitle = date.toLocaleString();
-      } catch (formatError) {
-         console.error("Error formatting date:", tweet.createdAt, formatError);
-         timeAgo = "Error";
-         dateTitle = "Error";
-      }
-    } else {
-      console.warn("Invalid date value received for tweet:", tweet.id, "createdAt:", tweet.createdAt);
-      timeAgo = "Invalid date";
-      dateTitle = "Invalid date";
-    }
-  } else {
-     console.warn("Missing or invalid createdAt type for tweet:", tweet.id, "createdAt:", tweet.createdAt);
-  }
-
-  const stats = { replies: tweet.stats?.replies??0, retweets: tweet.stats?.retweets??0, likes: tweet.stats?.likes??0, views: tweet.stats?.views??0 };
+  // Helper to format date, or use a library like date-fns
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
 
   return (
-    <article className="flex p-3 border-b border-gray-700/75 hover:bg-gray-900/50 transition-colors duration-150 cursor-pointer">
-      {/* Avatar Section */}
-      <Link to={`/${tweet.author.handle}`} className="mr-3 flex-shrink-0">
-        <Avatar src={placeholderAvatar} alt={tweet.author.name} />
-      </Link>
-
-      {/* Content Section */}
-      <div className="flex-grow min-w-0">
-        {/* Author Info Line */}
-        <div className="flex items-center space-x-1 text-sm flex-wrap">
-          <Link to={`/${tweet.author.handle}`} className="font-bold hover:underline break-words">
-            {tweet.author.name}
-          </Link>
-          <Link to={`/${tweet.author.handle}`} className="text-gray-500 hidden sm:inline break-words">
-            @{tweet.author.handle}
-          </Link>
-          <span className="text-gray-500">·</span>
-          {/* Use the safe values calculated above */}
-          <span className="text-gray-500 hover:underline" title={dateTitle}>
-            {timeAgo} ago
+    <article className="flex p-4 border-b border-gray-700/75 hover:bg-gray-800/50 transition-colors duration-150 cursor-pointer">
+      <div className="mr-3 flex-shrink-0">
+        <Avatar src={tweet.author.avatarUrl} alt={tweet.author.name} />
+      </div>
+      <div className="flex-grow">
+        <div className="flex items-center">
+          <span className="font-bold hover:underline">{tweet.author.name}</span>
+          <span className="text-gray-500 ml-2">{tweet.author.handle}</span>
+          <span className="text-gray-500 ml-2">·</span>
+          <span className="text-gray-500 ml-2 hover:underline" title={tweet.createdAt.toISOString()}>
+            {formatDate(tweet.createdAt)}
           </span>
         </div>
-
-        {/* ... rest of the component (title, content, image, actions) ... */}
-         {tweet.title && (<h2 className="text-lg font-semibold text-white mt-1 break-words">{tweet.title}</h2>)}
-         <p className="mt-1 whitespace-pre-wrap text-[15px] break-words">{tweet.content}</p>
-         {tweet.imageUrl && ( <div className="mt-3 border border-gray-700 rounded-lg overflow-hidden"><img src={tweet.imageUrl} alt="" className="max-h-96 w-full object-cover" loading="lazy"/></div>)}
-         <div className="flex justify-between mt-3 text-gray-500 max-w-xs text-xs"> {/* ... actions ... */} <button className="flex items-center space-x-1 hover:text-twitter-blue group"><div className="group-hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150 -ml-2"><FaRegComment className=" text-base" /></div><span>{stats.replies > 0 ? stats.replies : ''}</span></button><button className="flex items-center space-x-1 hover:text-green-500 group"><div className="group-hover:bg-green-500/10 rounded-full p-2 transition-colors duration-150 -ml-2"><FaRetweet className=" text-base" /></div><span>{stats.retweets > 0 ? stats.retweets : ''}</span></button><button className="flex items-center space-x-1 hover:text-pink-500 group"><div className="group-hover:bg-pink-500/10 rounded-full p-2 transition-colors duration-150 -ml-2"><FaRegHeart className=" text-base" /></div><span>{stats.likes > 0 ? stats.likes : ''}</span></button><button className="flex items-center space-x-1 hover:text-twitter-blue group"><div className="group-hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150 -ml-2"><FaChartBar className=" text-base"/></div><span>{stats.views > 0 ? Intl.NumberFormat('en', { notation: 'compact' }).format(stats.views) : ''}</span></button><button className="hover:text-twitter-blue group -m-2"><div className="group-hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaShareSquare className="text-base"/></div></button></div>
-
+        {tweet.title && <h3 className="text-lg font-semibold mt-1">{tweet.title}</h3>}
+        <p className="my-1 whitespace-pre-wrap text-gray-50">{tweet.content}</p>
+        {tweet.imageUrl && (
+          <div className="mt-2 rounded-xl overflow-hidden border border-gray-700">
+            <img src={tweet.imageUrl} alt="Tweet image" className="w-full h-auto object-cover" />
+          </div>
+        )}
+        <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
+          <button className="flex items-center hover:text-twitter-blue group">
+            <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
+          </button>
+          <button className="flex items-center hover:text-green-500 group">
+            <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
+          </button>
+          <button className="flex items-center hover:text-red-500 group">
+            <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
+          </button>
+          <button className="flex items-center hover:text-twitter-blue group">
+            <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.views ?? 0}</span>
+          </button>
+          <button className="hover:text-twitter-blue group">
+             <FaShareSquare className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28}/>
+          </button>
+        </div>
       </div>
     </article>
   );
