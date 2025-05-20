@@ -1,8 +1,6 @@
-// src/components/tweet/ComposeTweet.tsx
 import React, { useState } from 'react';
-import Avatar from '../common/Avatar'; // Adjust path if needed
-import { mockUser } from '../../services/mockData'; // Adjust path if needed
-// Ensure imports are from your single types file
+import Avatar from '../common/Avatar'; 
+import { mockUser } from '../../services/mockData'; 
 import { Tweet, Author } from '../../types';
 import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
 
@@ -12,16 +10,15 @@ interface ComposeTweetProps {
 
 const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
   const [tweetContent, setTweetContent] = useState('');
-  // const [tweetTitle, setTweetTitle] = useState(''); // If you decide to add title input
+  const [tweetTitle, setTweetTitle] = useState(''); // If you decide to add title input
 
   const maxLength = 280;
 
   const handlePostTweet = () => {
     if (!tweetContent.trim()) return;
 
-    // Construct mockAuthor if mockUser doesn't directly fit Author type
     const mockAuthor: Author = {
-        id: mockUser.id, // Assuming mockUser has these fields
+        id: mockUser.id,
         name: mockUser.name,
         handle: mockUser.handle,
         avatarUrl: mockUser.avatarUrl
@@ -29,25 +26,23 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
 
     const newTweet: Tweet = {
         id: `t${Date.now()}`,
-        author: mockAuthor, // Use the mapped/verified Author type
-        // title: tweetTitle, // Include if you add title input
+        author: mockAuthor,
+        title: tweetTitle,
         content: tweetContent,
-        createdAt: new Date(), // <<<< NOW Date object
+        createdAt: new Date(), 
         stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
     };
     onTweetPosted(newTweet);
     setTweetContent('');
-    // setTweetTitle(''); // If you add title input
+    setTweetTitle('');
   };
 
   return (
     <div className="flex p-3 border-b border-gray-700/75">
       <div className="mr-3 flex-shrink-0">
-        {/* Ensure mockUser has avatarUrl or Avatar handles undefined */}
         <Avatar src={mockUser.avatarUrl} alt={mockUser.name} />
       </div>
       <div className="flex-grow">
-        {/* Optional: Input for title if you add it
         <input
           type="text"
           value={tweetTitle}
@@ -55,7 +50,6 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
           placeholder="Title (optional)"
           className="w-full bg-transparent text-md resize-none outline-none placeholder-gray-500 text-gray-100 py-1 mb-1"
         />
-        */}
         <textarea
           value={tweetContent}
           onChange={(e) => setTweetContent(e.target.value)}

@@ -1,11 +1,10 @@
-// src/App.tsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Added Navigate
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import ExplorePage from './pages/ExplorePage';
 import NotificationsPage from './pages/NotificationsPage';
-import LoginPage from './pages/LoginPage'; // <-- Import LoginPage
+import LoginPage from './pages/LoginPage';
 import { useAuthContext } from './contexts/AuthContext'; 
 
 function App() {
@@ -27,11 +26,6 @@ function App() {
                 </MainLayout>
             )
         }/>
-
-        {/* Optional: Add standalone routes for signup, forgot password etc. */}
-        {/* <Route path="/signup" element={<SignupPage />} /> */}
-        {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
-
       </Routes>
     </Router>
   );

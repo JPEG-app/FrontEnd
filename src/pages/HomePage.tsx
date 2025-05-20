@@ -1,10 +1,8 @@
-// src/pages/HomePage.tsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import TweetCard from '../components/tweet/TweetCard';
 import ComposeTweet from '../components/tweet/ComposeTweet';
-// Ensure imports are from your single types file (e.g., '../types' if types/index.ts is used)
 import { Tweet, ApiFeedItem, Author } from '../types';
 
 const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
@@ -12,17 +10,15 @@ const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
     id: apiItem.userId,
     name: apiItem.authorUsername,
     handle: `@${apiItem.authorUsername.toLowerCase().replace(/\s+/g, '')}`,
-    avatarUrl: undefined, // Or map from apiItem if available
+    avatarUrl: undefined, 
   };
 
   return {
     id: apiItem.postId,
     author: authorInfo,
-    title: apiItem.postTitle, // API sends postTitle, map to title.
-                             // If Tweet.title is optional and apiItem.postTitle might not exist, handle accordingly.
-                             // For now, assuming apiItem.postTitle is always a string from API.
+    title: apiItem.postTitle,
     content: apiItem.postContent,
-    createdAt: new Date(apiItem.createdAt), // Convert string from API to Date
+    createdAt: new Date(apiItem.createdAt),
     imageUrl: apiItem.imageUrl,
     stats: {
       replies: apiItem.commentCount ?? 0,
@@ -55,13 +51,11 @@ const HomePage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        // API returns ApiFeedItem[] directly
-        const response = await axios.get<ApiFeedItem[]>('http://localhost:3003/feed');
+        const response = await axios.get<ApiFeedItem[]>('http://localhost:8000/feed');
         console.log("Raw feed data from API:", response.data);
 
         if (response.data && Array.isArray(response.data)) {
           const mappedTweets = response.data.map(mapApiItemToTweet);
-          // Sort by Date object's getTime()
           mappedTweets.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
           setTweets(mappedTweets);
         } else {
@@ -90,7 +84,7 @@ const HomePage: React.FC = () => {
 
     axios.post('http://localhost:3002/posts', {
       userId: newlyComposedTweet.author.id,
-      title: newlyComposedTweet.title || "", // Send empty string if title is undefined (assuming backend title is string)
+      title: newlyComposedTweet.title || "",
       content: newlyComposedTweet.content,
     }).then(response => {
       console.log('Tweet posted to backend, will update via Kafka feed', response.data);

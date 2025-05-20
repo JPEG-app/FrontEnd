@@ -12,8 +12,8 @@ const RightSidebar: React.FC = () => {
   ];
 
   const whoToFollow = [
-    { name: 'Vite', handle: 'vite_js', avatar: {placeholderAvatar} },
-    { name: 'Tailwind Labs', handle: 'tailwindcss', avatar: {placeholderAvatar} },
+    { name: 'Dimitar Georgiev', handle: 'gushtera', avatar: {placeholderAvatar} },
+    { name: 'Ivan Georgiev', handle: 'ivan', avatar: {placeholderAvatar} },
   ];
 
   return (
@@ -67,14 +67,14 @@ const RightSidebar: React.FC = () => {
       </div>
 
       {/* Footer Links */}
-      <footer className="text-xs text-gray-500 mt-4 space-x-2">
+      {/* <footer className="text-xs text-gray-500 mt-4 space-x-2">
          <a href="#" className="hover:underline">Terms of Service</a>
          <a href="#" className="hover:underline">Privacy Policy</a>
          <a href="#" className="hover:underline">Cookie Policy</a>
          <a href="#" className="hover:underline">Accessibility</a>
          <a href="#" className="hover:underline">Ads info</a>
          <span>© {new Date().getFullYear()} X Corp.</span>
-      </footer>
+      </footer> */}
     </aside>
   );
 };
