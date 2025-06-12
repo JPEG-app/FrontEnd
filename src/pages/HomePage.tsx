@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await axios.get<ApiFeedItem[]>('https://gateway-deployment.default.svc.cluster.local:8000/feed');
+        const response = await axios.get<ApiFeedItem[]>('https://api.jpegapp.lol/feed');
         console.log("Raw feed data from API:", response.data);
 
         if (response.data && Array.isArray(response.data)) {
@@ -82,7 +82,7 @@ const HomePage: React.FC = () => {
     const optimisticallyAddedTweet = { ...newlyComposedTweet, id: `temp-${Date.now()}` };
     setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
 
-    axios.post('https://gateway-deployment.default.svc.cluster.local:8000/posts', {
+    axios.post('https://api.jpegapp.lol/posts', {
       userId: newlyComposedTweet.author.id,
       title: newlyComposedTweet.title || "",
       content: newlyComposedTweet.content,
