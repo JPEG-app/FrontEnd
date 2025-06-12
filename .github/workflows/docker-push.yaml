@@ -27,6 +27,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/jpeg-frontend:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/jpeg-frontend:latest
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/jpeg-frontend:cache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/jpeg-frontend:cache,mode=max
