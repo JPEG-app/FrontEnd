@@ -47,7 +47,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort
+  type: ClusterIP
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -67,3 +67,42 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: jpegapp-ssl-cert
+spec:
+  domains:
+    - jpegapp.lol
+    - www.jpegapp.lol
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jpegapp-ingress
+  annotations:
+    networking.gke.io/managed-certificates: jpegapp-ssl-cert
+    kubernetes.io/ingress.global-static-ip-name: frontend-ip
+spec:
+  rules:
+  - host: jpegapp.lol
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+  - host: www.jpegapp.lol
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80

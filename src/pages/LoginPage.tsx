@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-        const response = await axios.post('https://jpeg.gateway/auth/login', { email: username, password: password });
+        const response = await axios.post('https://gateway-deployment.default.svc.cluster.local:8000/auth/login', { email: username, password: password });
         console.log('Login successful:', response.data);
         login({ username: response.data.username || username });
         navigate('/');
