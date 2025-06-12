@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
-import RightSidebar from './RightSidebar';
+// import RightSidebar from './RightSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <main className="flex-grow border-x border-gray-700/75 max-w-[600px] w-full">
         {children}
       </main>
-      <RightSidebar />
+      {/* <RightSidebar /> */}
     </div>
   );
 };

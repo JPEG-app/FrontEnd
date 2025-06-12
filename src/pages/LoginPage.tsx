@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaTwitter } from 'react-icons/fa';
 import axios from 'axios';
 import { useAuthContext } from '../contexts/AuthContext';
-
+import Cookies from 'js-cookie';
 
 const LoginPage: React.FC = () => {
     const { login } = useAuthContext();
@@ -21,8 +21,14 @@ const LoginPage: React.FC = () => {
     try {
         const response = await axios.post('https://api.jpegapp.lol/auth/login', { email: username, password: password });
         console.log('Login successful:', response.data);
-        login({ username: response.data.username || username });
-        navigate('/');
+        const { token, username: responseUsername } = response.data;
+        if (token) {
+            Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'lax' });            
+            login({ username: responseUsername || username }); 
+            navigate('/');
+        } else {
+            throw new Error("Login successful, but no token was provided by the server.");
+        }
     } catch (err: any) {
         setError(err.response?.data?.message || 'Login failed. Please check credentials.');
         console.error("Login error:", err);
@@ -114,6 +120,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-
-
-// application insights 
