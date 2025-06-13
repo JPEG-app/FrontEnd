@@ -41,4 +41,5 @@ export interface User {
   bio?: string;
   followingCount?: number;
   followersCount?: number;
+  createdAt: Date;
 }

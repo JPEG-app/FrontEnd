@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { FaTwitter, FaHome, FaEnvelope, FaEllipsisH } from 'react-icons/fa';
 import axios from 'axios';
 
+const HARDCODED_AVATAR_URL = 'https://i.pravatar.cc/150';
+
 const Sidebar: React.FC = () => {
   const [username, setUsername] = useState<string>('');
-  const [avatarUrl] = useState<string>('jpeg-frontend/src/assets/avatar.png'); // Replace with real logic if needed
 
   useEffect(() => {
     const token = document.cookie
@@ -69,16 +70,19 @@ const Sidebar: React.FC = () => {
 
       {/* User Profile Button */}
       <div className="mb-4 mt-auto w-full">
-        <button className="flex items-center justify-between w-full p-3 hover:bg-gray-800/80 rounded-full transition-colors duration-150">
+        <Link
+          to={`/profile/${username}`}
+          className="flex items-center justify-between w-full p-3 hover:bg-gray-800/80 rounded-full transition-colors duration-150"
+        >
           <div className="flex items-center">
-            <img src={avatarUrl} alt="User" className="w-10 h-10 rounded-full mr-3" />
+            <img src={HARDCODED_AVATAR_URL} alt="User" className="w-10 h-10 rounded-full mr-3" />
             <div className="text-left hidden xl:block">
               <div className="font-bold text-sm">{username}</div>
-              <div className="text-gray-500 text-sm">@{username}</div>
+              <div className="text-gray-500 text-sm">@{username.toLowerCase()}</div>
             </div>
           </div>
           <FaEllipsisH className="hidden xl:block text-gray-500" />
-        </button>
+        </Link>
       </div>
     </header>
   );

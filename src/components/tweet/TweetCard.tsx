@@ -1,16 +1,16 @@
 // src/components/tweet/TweetCard.tsx
 import React from 'react';
-// Ensure imports are from your single types file
 import { Tweet } from '../../types';
-import Avatar from '../common/Avatar'; // Adjust path
-import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaShareSquare } from 'react-icons/fa'; // Example icons
+import Avatar from '../common/Avatar';
+import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaShareSquare } from 'react-icons/fa';
 
 export interface TweetCardProps {
   tweet: Tweet;
 }
 
+const HARDCODED_AVATAR_URL = 'https://i.pravatar.cc/150';
+
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
-  // Helper to format date, or use a library like date-fns
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -22,7 +22,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
   return (
     <article className="flex p-4 border-b border-gray-700/75 hover:bg-gray-800/50 transition-colors duration-150 cursor-pointer">
       <div className="mr-3 flex-shrink-0">
-        <Avatar src={tweet.author.avatarUrl} alt={tweet.author.name} />
+        <Avatar src={HARDCODED_AVATAR_URL} alt={tweet.author.name} />
       </div>
       <div className="flex-grow">
         <div className="flex items-center">
