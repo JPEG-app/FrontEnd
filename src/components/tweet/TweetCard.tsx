@@ -34,7 +34,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
         }
 
         const response2 = await axios.get(
-          `https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+          `https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
