@@ -8,7 +8,7 @@ import Avatar from '../components/common/Avatar';
 import TweetCard from '../components/tweet/TweetCard';
 import { FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 
-const STATIC_AVATAR_URL = './user.jpg';
+const STATIC_AVATAR_URL = '/user.jpg';
 
 const mapApiItemToTweet = (apiItem: any, authorDetails: Author): Tweet => {
   return {
