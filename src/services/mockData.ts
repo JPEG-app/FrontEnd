@@ -10,4 +10,5 @@ export const mockUser: User = {
   bio: 'Building UIs with React & TypeScript.',
   followingCount: 150,
   followersCount: 500,
+  createdAt: new Date()
 };
