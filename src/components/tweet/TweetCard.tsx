@@ -93,12 +93,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
           <button className="flex items-center hover:text-red-500 group">
-          <FaRegHeart
-            className={`rounded-full p-1.5 group-hover:bg-red-500/10 ${
-              liked ? "text-red-500" : "text-gray-500"
-            }`}
-            size={28}
-          />
+            <FaRegHeart className={`rounded-full p-1.5 ${ liked ? "bg-red-500" : "10" }`} size={28} />
             <span className="ml-1 text-xs">{likeCount}</span>
           </button>
           {/* <button className="flex items-center hover:text-twitter-blue group">
