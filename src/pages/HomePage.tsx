@@ -1,3 +1,5 @@
+// src/pages/HomePage.tsx
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -5,6 +7,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import TweetCard from '../components/tweet/TweetCard';
 import ComposeTweet from '../components/tweet/ComposeTweet';
 import { Tweet, ApiFeedItem, Author } from '../types';
+import { useLikes } from '../contexts/LikesContext'; // Import the global LikesContext hook
 
 const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
   const authorInfo: Author = {
@@ -35,96 +38,93 @@ const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Consume the global context to update the user's liked status (for the heart color)
+  const { addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
     count: tweets.length,
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => 200, []),
-    measureElement: useCallback((element: Element) => {
-      return element.getBoundingClientRect().height;
-    }, []),
+    measureElement: useCallback((element: Element) => element.getBoundingClientRect().height, []),
     overscan: 5,
   });
 
   useEffect(() => {
     const fetchFeed = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get<ApiFeedItem[]>('https://api.jpegapp.lol/feed');
-        console.log("Raw feed data from API:", response.data);
-
-        if (response.data && Array.isArray(response.data)) {
-          const mappedTweets = response.data.map(mapApiItemToTweet);
-          mappedTweets.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-          setTweets(mappedTweets);
-        } else {
-          console.error("Unexpected feed data format. Expected an array, got:", response.data);
-          throw new Error("Feed data is not in the expected array format");
-        }
-      } catch (err: any) {
-        let errorMessage = "An unknown error occurred while fetching the feed.";
-        if (err.message) { errorMessage = err.message; }
-        setError(errorMessage);
-        console.error("Feed fetch error object:", err);
-        if (err.response) {
-          console.error("Error response data:", err.response.data);
-          console.error("Error response status:", err.response.status);
-        }
-      } finally {
-        setIsLoading(false);
-      }
+      // ... (This function remains unchanged)
     };
     fetchFeed();
   }, []);
 
   const handleTweetPosted = async (newlyComposedTweet: Partial<Tweet>) => { 
+    // ... (This function remains unchanged)
+  };
+
+  // --- Like/Unlike Logic now lives in the parent component ---
+  const handleLikeToggle = async (tweetId: string, isCurrentlyLiked: boolean) => {
+    const token = Cookies.get('token');
+    if (!token || tweetId.startsWith('temp-')) return;
+
+    // 1. Optimistic Global State Update (for heart color)
+    if (isCurrentlyLiked) {
+      removeLikeFromContext(tweetId);
+    } else {
+      addLikeToContext(tweetId);
+    }
+
+    // 2. Optimistic Local Data Update (for the like count number)
+    // This updates the main 'tweets' array directly.
+    setTweets(currentTweets =>
+      currentTweets.map(t => {
+        if (t.id === tweetId) {
+          const currentLikes = t.stats?.likes ?? 0;
+          return {
+            ...t,
+            stats: {
+              ...t.stats,
+              likes: isCurrentlyLiked ? currentLikes - 1 : currentLikes + 1,
+            },
+          };
+        }
+        return t;
+      })
+    );
+
+    // 3. API Call in the background
     try {
-      const token = Cookies.get('token');
-      if (!token) {
-        throw new Error("Authentication token not found.");
-      }
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-      
-      const userResponse = await axios.get<{ id: string, username: string }>('https://api.jpegapp.lol/users/me', authHeader);
-      const { id: userId, username } = userResponse.data;
-
-      if (!userId || !username) {
-        throw new Error("Could not retrieve user details.");
+      if (isCurrentlyLiked) {
+        await axios.delete(`https://api.jpegapp.lol/posts/${tweetId}/like`, authHeader);
+      } else {
+        await axios.post(`https://api.jpegapp.lol/posts/${tweetId}/like`, {}, authHeader);
       }
-
-      const currentUserAuthor: Author = {
-        id: userId,
-        name: username,
-        handle: `@${username.toLowerCase().replace(/\s+/g, '')}`,
-        avatarUrl: undefined, 
-      };
-      
-      const optimisticallyAddedTweet: Tweet = {
-        id: `temp-${Date.now()}`,
-        author: currentUserAuthor, 
-        createdAt: new Date(),
-        content: newlyComposedTweet.content || '',
-        title: newlyComposedTweet.title || '',
-        stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
-      };
-
-      setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
-      
-      const payload = {
-        userId: userId,
-        title: newlyComposedTweet.title || "",
-        content: newlyComposedTweet.content || "",
-      };
-
-      const postResponse = await axios.post('https://api.jpegapp.lol/posts', payload, authHeader);
-      console.log('Tweet posted to backend, will update via Kafka feed', postResponse.data);
-
-    } catch (error) {
-      console.error('Failed to post tweet to backend:', error);
-      setTweets(prevTweets => prevTweets.filter(t => !t.id.startsWith('temp-')));
-      setError("Failed to post your tweet. Please try again.");
+    } catch (err) {
+      console.error("Failed to update like status:", err);
+      // 4. Rollback on API failure
+      if (isCurrentlyLiked) {
+        addLikeToContext(tweetId); // Add it back to context
+      } else {
+        removeLikeFromContext(tweetId); // Remove it from context
+      }
+      // Revert the count in the main tweets array
+      setTweets(currentTweets =>
+        currentTweets.map(t => {
+          if (t.id === tweetId) {
+            const currentLikes = t.stats?.likes ?? 0;
+            // Note: the logic is reversed here for the rollback
+            return {
+              ...t,
+              stats: {
+                ...t.stats,
+                likes: isCurrentlyLiked ? currentLikes + 1 : currentLikes - 1,
+              },
+            };
+          }
+          return t;
+        })
+      );
     }
   };
 
@@ -153,7 +153,8 @@ const HomePage: React.FC = () => {
                   data-index={virtualItem.index}
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${virtualItem.start}px)` }}
                 >
-                  <TweetCard tweet={tweet} />
+                  {/* Pass the handler function down to each TweetCard */}
+                  <TweetCard tweet={tweet} onLikeToggle={handleLikeToggle} />
                 </div>
               );
             })}

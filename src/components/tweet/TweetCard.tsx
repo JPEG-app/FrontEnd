@@ -1,26 +1,22 @@
 // src/components/tweet/TweetCard.tsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React from 'react';
 import { useLikes } from '../../contexts/LikesContext';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 import { FaRegComment, FaRegHeart, FaHeart, FaShareSquare } from 'react-icons/fa';
 
+// It now expects to receive the handler function from its parent
 export interface TweetCardProps {
   tweet: Tweet;
+  onLikeToggle: (tweetId: string, isCurrentlyLiked: boolean) => void;
 }
 
 const HARDCODED_AVATAR_URL = '/user.jpg';
 
-const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
-  const { likedPostIds, addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
-  const [displayLikeCount, setDisplayLikeCount] = useState(tweet.stats?.likes ?? 0);
+const TweetCard: React.FC<TweetCardProps> = ({ tweet, onLikeToggle }) => {
+  // We still use the context to determine the heart's color
+  const { likedPostIds } = useLikes();
   const isLikedByCurrentUser = likedPostIds.has(tweet.id);
-
-  useEffect(() => {
-    setDisplayLikeCount(tweet.stats?.likes ?? 0);
-  }, [tweet.stats?.likes]);
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
@@ -30,36 +26,10 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
     });
   };
 
-  const handleLikeClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const token = Cookies.get('token');
-    if (!token || tweet.id.startsWith('temp-')) return;
-
-    if (isLikedByCurrentUser) {
-      removeLikeFromContext(tweet.id);
-      setDisplayLikeCount(prev => prev - 1);
-    } else {
-      addLikeToContext(tweet.id);
-      setDisplayLikeCount(prev => prev + 1);
-    }
-
-    try {
-      const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-      if (isLikedByCurrentUser) {
-        await axios.delete(`https://api.jpegapp.lol/posts/${tweet.id}/like`, authHeader);
-      } else {
-        await axios.post(`https://api.jpegapp.lol/posts/${tweet.id}/like`, {}, authHeader);
-      }
-    } catch (err) {
-      console.error("Failed to update like status:", err);
-      if (isLikedByCurrentUser) {
-        addLikeToContext(tweet.id);
-        setDisplayLikeCount(prev => prev + 1);
-      } else {
-        removeLikeFromContext(tweet.id);
-        setDisplayLikeCount(prev => prev - 1);
-      }
-    }
+  // The click handler is now extremely simple and just calls the parent's function
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card navigation
+    onLikeToggle(tweet.id, isLikedByCurrentUser);
   };
 
   return (
@@ -94,7 +64,8 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
               ? <FaHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} /> 
               : <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
             }
-            <span className="ml-1 text-xs">{displayLikeCount}</span>
+            {/* The count now comes DIRECTLY from the tweet prop, which is updated by the parent */}
+            <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
           </button>
           
           <button className="hover:text-twitter-blue group">
