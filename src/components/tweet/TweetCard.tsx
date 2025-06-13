@@ -15,9 +15,7 @@ const HARDCODED_AVATAR_URL = '/user.jpg';
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
   const { likedPostIds, addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
-  
   const [displayLikeCount, setDisplayLikeCount] = useState(tweet.stats?.likes ?? 0);
-  
   const isLikedByCurrentUser = likedPostIds.has(tweet.id);
 
   useEffect(() => {
@@ -70,7 +68,21 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
         <Avatar src={HARDCODED_AVATAR_URL} alt={tweet.author.name} />
       </div>
       <div className="flex-grow">
-        {/* ... */}
+        <div className="flex items-center">
+          <span className="font-bold hover:underline">{tweet.author.name}</span>
+          <span className="text-gray-500 ml-2">{tweet.author.handle}</span>
+          <span className="text-gray-500 ml-2">·</span>
+          <span className="text-gray-500 ml-2 hover:underline" title={tweet.createdAt.toISOString()}>
+            {formatDate(tweet.createdAt)}
+          </span>
+        </div>
+        {tweet.title && <h3 className="text-lg font-semibold mt-1">{tweet.title}</h3>}
+        <p className="my-1 whitespace-pre-wrap text-gray-50">{tweet.content}</p>
+        {tweet.imageUrl && (
+          <div className="mt-2 rounded-xl overflow-hidden border border-gray-700">
+            <img src={tweet.imageUrl} alt="Tweet image" className="w-full h-auto object-cover" />
+          </div>
+        )}
         <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
           <button className="flex items-center hover:text-twitter-blue group">
             <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
