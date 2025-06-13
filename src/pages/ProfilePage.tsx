@@ -8,8 +8,7 @@ import Avatar from '../components/common/Avatar';
 import TweetCard from '../components/tweet/TweetCard';
 import { FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 
-// Use the static image from the public folder
-const STATIC_AVATAR_URL = '/user.jpg';
+const STATIC_AVATAR_URL = './user.jpg';
 
 const mapApiItemToTweet = (apiItem: any, authorDetails: Author): Tweet => {
   return {
@@ -29,7 +28,6 @@ const mapApiItemToTweet = (apiItem: any, authorDetails: Author): Tweet => {
 };
 
 const ProfilePage: React.FC = () => {
-  // Assuming 'userHandle' from the URL is the user's ID
   const { userHandle: userId } = useParams<{ userHandle: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -53,7 +51,6 @@ const ProfilePage: React.FC = () => {
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
       try {
-        // Fetch both the user profile and their posts in parallel for efficiency
         const [userResponse, postsResponse] = await Promise.all([
             axios.get(`https://api.jpegapp.lol/users/${userId}`, authHeader),
             axios.get(`https://api.jpegapp.lol/users/${userId}/posts`, authHeader)
