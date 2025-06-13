@@ -1,22 +1,76 @@
-// src/components/tweet/TweetCard.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
-import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
+import { FaRegComment, FaRegHeart, FaHeart, FaShareSquare } from 'react-icons/fa'; 
 
 export interface TweetCardProps {
   tweet: Tweet;
 }
 
-const HARDCODED_AVATAR_URL = './user.jpg';
+const HARDCODED_AVATAR_URL = '/user.jpg';
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [currentLikeCount, setCurrentLikeCount] = useState(tweet.stats?.likes ?? 0);
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      const token = Cookies.get('token');
+      if (!token || tweet.id.startsWith('temp-')) {
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `https://api.jpegapp.lol/posts/${tweet.id}/like/status`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (response.data && typeof response.data.liked === 'boolean') {
+          setIsLiked(response.data.liked);
+        }
+      } catch (err) {
+        console.error("Failed to check like status for tweet:", tweet.id, err);
+      }
+    };
+
+    checkLikeStatus();
+  }, [tweet.id]); 
+
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const token = Cookies.get('token');
+    if (!token) {
+      alert("Please log in to like posts.");
+      return;
+    }
+
+    const originalLikedState = isLiked;
+    setIsLiked(!originalLikedState);
+    setCurrentLikeCount(prevCount => originalLikedState ? prevCount - 1 : prevCount + 1);
+
+    try {
+      const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+      if (originalLikedState) {
+        await axios.delete(`https://api.jpegapp.lol/posts/${tweet.id}/like`, authHeader);
+      } else {
+        await axios.post(`https://api.jpegapp.lol/posts/${tweet.id}/like`, {}, authHeader);
+      }
+    } catch (err) {
+      console.error("Failed to update like status:", err);
+      setIsLiked(originalLikedState);
+      setCurrentLikeCount(prevCount => originalLikedState ? prevCount + 1 : prevCount - 1);
+    }
   };
 
   return (
@@ -45,18 +99,15 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
           </button>
-          {/* <button className="flex items-center hover:text-green-500 group">
-            <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
-          </button> */}
-          <button className="flex items-center hover:text-red-500 group">
-            <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
+          
+          <button onClick={handleLikeClick} className={`flex items-center group ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}>
+            {isLiked 
+              ? <FaHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} /> 
+              : <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
+            }
+            <span className="ml-1 text-xs">{currentLikeCount}</span>
           </button>
-          {/* <button className="flex items-center hover:text-twitter-blue group">
-            <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{tweet.stats?.views ?? 0}</span>
-          </button> */}
+          
           <button className="hover:text-twitter-blue group">
              <FaShareSquare className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28}/>
           </button>

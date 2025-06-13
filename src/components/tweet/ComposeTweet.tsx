@@ -1,10 +1,12 @@
+// src/components/tweet/ComposeTweet.tsx
 import React, { useState, FormEvent } from 'react';
-import { Tweet } from '../../types'; 
+import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 
+// Define the props that this component will receive from its parent
 interface ComposeTweetProps {
-  onTweetPosted: (newlyComposedTweet: Tweet) => void;
-  disabled?: boolean; 
+  onTweetPosted: (newlyComposedTweet: Partial<Tweet>) => void; // It sends a partial tweet up
+  disabled?: boolean;
 }
 
 const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted, disabled = false }) => {
@@ -16,13 +18,16 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted, disabled = f
       return;
     }
 
-    const newTweet: Partial<Tweet> = {
+    // Create a very basic tweet object with only the content.
+    // The parent (HomePage) is responsible for adding the real author, date, etc.
+    const partialTweet: Partial<Tweet> = {
       content: content,
-      author: { id: '', name: 'reactdev', handle: '@reactdev' } 
     };
 
-    onTweetPosted(newTweet as Tweet);
+    // Call the function passed down from HomePage
+    onTweetPosted(partialTweet);
     
+    // Clear the input field after posting
     setContent('');
   };
 

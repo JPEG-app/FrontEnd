@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
     fetchFeed();
   }, []);
 
-  const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
+  const handleTweetPosted = async (newlyComposedTweet: Partial<Tweet>) => { 
     try {
       const token = Cookies.get('token');
       if (!token) {
@@ -102,10 +102,11 @@ const HomePage: React.FC = () => {
       };
       
       const optimisticallyAddedTweet: Tweet = {
-        ...newlyComposedTweet,
         id: `temp-${Date.now()}`,
         author: currentUserAuthor, 
         createdAt: new Date(),
+        content: newlyComposedTweet.content || '',
+        title: newlyComposedTweet.title || '',
         stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
       };
 
@@ -114,7 +115,7 @@ const HomePage: React.FC = () => {
       const payload = {
         userId: userId,
         title: newlyComposedTweet.title || "",
-        content: newlyComposedTweet.content,
+        content: newlyComposedTweet.content || "",
       };
 
       const postResponse = await axios.post('https://api.jpegapp.lol/posts', payload, authHeader);
