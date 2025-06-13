@@ -22,26 +22,20 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
 
     const fetchLikeCount = async () => {
       try {
-        const response = await axios.get(
-          `https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (typeof response.data.count === 'number') {
-          setLikeCount(response.data.count);
+        const [countRes, statusRes] = await Promise.all([
+          axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+  
+        if (typeof countRes.data.count === 'number') {
+          setLikeCount(countRes.data.count);
         }
-
-        const response2 = await axios.get(
-          `https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (typeof response2.data.hasLiked === 'boolean') {
-          setLiked(response.data.count);
+        if (typeof statusRes.data.hasLiked === 'boolean') {
+          setLiked(statusRes.data.hasLiked);
         }
       } catch (error) {
         if (axios.isCancel(error)) {
@@ -92,7 +86,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
-          <button className={`flex items-center ${ liked ? "text-red-500" : "10" } group`}>
+          <button className={`flex items-center group`}>
             <FaRegHeart className={`rounded-full p-1.5 ${ liked ? "bg-red-500" : "10" }`} size={28} />
             <span className="ml-1 text-xs">{likeCount}</span>
           </button>
