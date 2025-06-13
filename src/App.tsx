@@ -8,12 +8,14 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { useAuthContext } from './contexts/AuthContext'; 
 import { LikesProvider } from './contexts/LikesContext';
+import { TweetsProvider } from './contexts/TweetsContext';
 
 function App() {
   const { isAuthenticated } = useAuthContext();
   
   return (
     <LikesProvider>
+      <TweetsProvider>
       <Router>
         <Routes>
           <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />} />
@@ -37,6 +39,7 @@ function App() {
           }/>
         </Routes>
       </Router>
+      </TweetsProvider>
     </LikesProvider>
   );
 }
