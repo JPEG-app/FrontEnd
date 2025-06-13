@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import TweetCard from '../components/tweet/TweetCard';
 import ComposeTweet from '../components/tweet/ComposeTweet';
@@ -78,21 +79,38 @@ const HomePage: React.FC = () => {
     fetchFeed();
   }, []);
 
-  const handleTweetPosted = (newlyComposedTweet: Tweet) => {
+  const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
     const optimisticallyAddedTweet = { ...newlyComposedTweet, id: `temp-${Date.now()}` };
     setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
 
-    axios.post('https://api.jpegapp.lol/posts', {
-      userId: newlyComposedTweet.author.id,
-      title: newlyComposedTweet.title || "",
-      content: newlyComposedTweet.content,
-    }).then(response => {
-      console.log('Tweet posted to backend, will update via Kafka feed', response.data);
-    }).catch(error => {
+    try {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error("Authentication token not found.");
+      }
+      const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+      
+      const userResponse = await axios.get<{ id: string }>('https://api.jpegapp.lol/users/me', authHeader);
+      const userId = userResponse.data.id;
+
+      if (!userId) {
+        throw new Error("Could not retrieve user ID.");
+      }
+      
+      const payload = {
+        userId: userId,
+        title: newlyComposedTweet.title || "",
+        content: newlyComposedTweet.content,
+      };
+
+      const postResponse = await axios.post('https://api.jpegapp.lol/posts', payload, authHeader);
+      console.log('Tweet posted to backend, will update via Kafka feed', postResponse.data);
+
+    } catch (error) {
       console.error('Failed to post tweet to backend:', error);
       setTweets(prevTweets => prevTweets.filter(t => t.id !== optimisticallyAddedTweet.id));
       setError("Failed to post your tweet. Please try again.");
-    });
+    }
   };
 
   return (
