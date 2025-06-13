@@ -16,8 +16,33 @@ const HomePage: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
+  // const { addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const { addLike: addLikeToContext, removeLike: removeLikeFromContext } = useLikes();
+  
+  const fetchFeed = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get<ApiFeedItem[]>('https://api.jpegapp.lol/feed');
+      const mappedTweets = response.data.map(mapApiItemToTweet).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setTweets(mappedTweets);
+    } catch (err) {
+      setError("Failed to fetch feed.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []); 
+
+  useEffect(() => {
+    fetchFeed();
+
+    window.addEventListener('focus', fetchFeed);
+
+    return () => {
+      window.removeEventListener('focus', fetchFeed);
+    };
+  }, [fetchFeed]); 
 
   const rowVirtualizer = useVirtualizer({
     count: tweets.length,
