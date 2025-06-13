@@ -8,7 +8,7 @@ export interface TweetCardProps {
   tweet: Tweet;
 }
 
-const HARDCODED_AVATAR_URL = 'https://i.pravatar.cc/150';
+const HARDCODED_AVATAR_URL = './user.jpg';
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
   const formatDate = (date: Date): string => {

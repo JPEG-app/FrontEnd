@@ -3,10 +3,11 @@ import { NavLink, Link } from 'react-router-dom';
 import { FaTwitter, FaHome, FaEnvelope, FaEllipsisH } from 'react-icons/fa';
 import axios from 'axios';
 
-const HARDCODED_AVATAR_URL = 'https://i.pravatar.cc/150';
+const HARDCODED_AVATAR_URL = './user.jpg';
 
 const Sidebar: React.FC = () => {
   const [username, setUsername] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     const token = document.cookie
@@ -24,6 +25,7 @@ const Sidebar: React.FC = () => {
       })
       .then(response => {
         setUsername(response.data.username);
+        setUserId(response.data.id);
       })
       .catch(error => {
         console.error('Failed to fetch user data:', error);
@@ -71,7 +73,7 @@ const Sidebar: React.FC = () => {
       {/* User Profile Button */}
       <div className="mb-4 mt-auto w-full">
         <Link
-          to={`/profile/${username}`}
+          to={`/profile/${userId}`}
           className="flex items-center justify-between w-full p-3 hover:bg-gray-800/80 rounded-full transition-colors duration-150"
         >
           <div className="flex items-center">
