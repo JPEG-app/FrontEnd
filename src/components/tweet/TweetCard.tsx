@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
-import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaShareSquare } from 'react-icons/fa';
+import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
 
 export interface TweetCardProps {
   tweet: Tweet;
@@ -45,18 +45,18 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
           </button>
-          <button className="flex items-center hover:text-green-500 group">
+          {/* <button className="flex items-center hover:text-green-500 group">
             <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
-          </button>
+          </button> */}
           <button className="flex items-center hover:text-red-500 group">
             <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
           </button>
-          <button className="flex items-center hover:text-twitter-blue group">
+          {/* <button className="flex items-center hover:text-twitter-blue group">
             <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.views ?? 0}</span>
-          </button>
+          </button> */}
           <button className="hover:text-twitter-blue group">
              <FaShareSquare className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28}/>
           </button>

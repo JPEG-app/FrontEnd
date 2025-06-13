@@ -1,13 +1,16 @@
 import React, { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTwitter } from 'react-icons/fa';
-import axios from 'axios'; // Using the standard axios import, as in the original
+import { FaTwitter, FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
+import axios from 'axios';
 
 const SignupPage: React.FC = () => {
-    // State for all three required fields
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [passwordhash, setPassword] = useState('');
+    
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -15,11 +18,16 @@ const SignupPage: React.FC = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        
+        if (passwordhash !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
         try {
-            // Using the full, hardcoded URL, identical in style to the original LoginPage
             const response = await axios.post('https://api.jpegapp.lol/auth/register', {
                 username,
                 email,
@@ -27,12 +35,9 @@ const SignupPage: React.FC = () => {
             });
 
             console.log('Registration successful:', response.data);
-
-            // After successful registration, redirect the user to the login page
             navigate('/login');
 
         } catch (err: any) {
-            // Update the error message to be more relevant for registration
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
             console.error("Registration error:", err);
         } finally {
@@ -43,12 +48,10 @@ const SignupPage: React.FC = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-black text-gray-100 px-4">
             <div className="w-full max-w-md p-8 space-y-6">
-                {/* Logo - Identical to LoginPage */}
                 <div className="flex justify-center text-sky-500 mb-6">
                     <FaTwitter size={40} />
                 </div>
 
-                {/* Title updated for registration */}
                 <h1 className="text-2xl font-bold text-center">Create your account</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,21 +89,52 @@ const SignupPage: React.FC = () => {
                         />
                     </div>
 
-                    {/* Password Input */}
-                    <div>
+                    <div className="relative">
                         <label htmlFor="password" className="sr-only">Password</label>
                         <input
                             id="password"
                             name="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             autoComplete="new-password"
                             required
                             value={passwordhash}
                             onChange={(e) => setPassword(e.target.value)}
                             disabled={isLoading}
                             placeholder="Password"
-                            className="w-full px-4 py-2 border border-gray-700 rounded-md bg-black text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-twitter-blue focus:border-transparent disabled:opacity-50"
+                            className="w-full px-4 py-2 pr-10 border border-gray-700 rounded-md bg-black text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-twitter-blue focus:border-transparent disabled:opacity-50"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-300"
+                            aria-label="Toggle password visibility"
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                    </div>
+
+                    <div className="relative">
+                        <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+                        <input
+                            id="confirm-password"
+                            name="confirm-password"
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            disabled={isLoading}
+                            placeholder="Confirm Password"
+                            className="w-full px-4 py-2 pr-10 border border-gray-700 rounded-md bg-black text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-twitter-blue focus:border-transparent disabled:opacity-50"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-300"
+                            aria-label="Toggle confirm password visibility"
+                        >
+                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
                     </div>
 
                     {/* Error Message */}
@@ -119,7 +153,7 @@ const SignupPage: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Link updated to point back to the Login page */}
+                    {/* Link to Login */}
                     <div className="text-center text-sm pt-2">
                         <span className="text-gray-400">Already have an account? </span>
                         <Link

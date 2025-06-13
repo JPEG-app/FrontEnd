@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Avatar from '../common/Avatar'; 
 import { mockUser } from '../../services/mockData'; 
 import { Tweet, Author } from '../../types';
-import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
+// import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
 
 interface ComposeTweetProps {
     onTweetPosted: (newTweet: Tweet) => void;
@@ -59,12 +59,12 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
           rows={2}
         />
         <div className="flex justify-between items-center mt-2">
-          <div className="flex space-x-1 text-twitter-blue">
+          {/* <div className="flex space-x-1 text-twitter-blue">
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaImage size={18}/></button>
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaPollH size={18}/></button>
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaSmile size={18}/></button>
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaCalendarAlt size={18}/></button>
-          </div>
+          </div> */}
           <div className="flex items-center space-x-3">
             {tweetContent.length > 0 && (
                  <span className={`text-sm ${tweetContent.length > maxLength - 20 ? 'text-red-500' : 'text-gray-500'}`}>

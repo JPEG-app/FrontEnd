@@ -80,9 +80,6 @@ const HomePage: React.FC = () => {
   }, []);
 
   const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
-    const optimisticallyAddedTweet = { ...newlyComposedTweet, id: `temp-${Date.now()}` };
-    setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
-
     try {
       const token = Cookies.get('token');
       if (!token) {
@@ -90,12 +87,29 @@ const HomePage: React.FC = () => {
       }
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
       
-      const userResponse = await axios.get<{ id: string }>('https://api.jpegapp.lol/users/me', authHeader);
-      const userId = userResponse.data.id;
+      const userResponse = await axios.get<{ id: string, username: string }>('https://api.jpegapp.lol/users/me', authHeader);
+      const { id: userId, username } = userResponse.data;
 
-      if (!userId) {
-        throw new Error("Could not retrieve user ID.");
+      if (!userId || !username) {
+        throw new Error("Could not retrieve user details.");
       }
+
+      const currentUserAuthor: Author = {
+        id: userId,
+        name: username,
+        handle: `@${username.toLowerCase().replace(/\s+/g, '')}`,
+        avatarUrl: undefined, 
+      };
+      
+      const optimisticallyAddedTweet: Tweet = {
+        ...newlyComposedTweet,
+        id: `temp-${Date.now()}`,
+        author: currentUserAuthor, 
+        createdAt: new Date(),
+        stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
+      };
+
+      setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
       
       const payload = {
         userId: userId,
@@ -108,7 +122,7 @@ const HomePage: React.FC = () => {
 
     } catch (error) {
       console.error('Failed to post tweet to backend:', error);
-      setTweets(prevTweets => prevTweets.filter(t => t.id !== optimisticallyAddedTweet.id));
+      setTweets(prevTweets => prevTweets.filter(t => !t.id.startsWith('temp-')));
       setError("Failed to post your tweet. Please try again.");
     }
   };
