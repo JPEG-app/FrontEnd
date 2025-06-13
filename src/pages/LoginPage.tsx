@@ -100,14 +100,14 @@ const LoginPage: React.FC = () => {
 
             {/* Links */}
             <div className="flex items-center justify-between text-sm">
-            <Link
+            {/* <Link
                 to="/forgot-password" // Define this route later if needed
                 className="font-medium text-twitter-blue hover:underline"
             >
                 Forgot password?
-            </Link>
+            </Link> */}
             <Link
-                to="/signup" // Define this route later if needed
+                to="/register" // Define this route later if needed
                 className="font-medium text-twitter-blue hover:underline"
             >
                 Sign up

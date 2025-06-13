@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
+import Cookies from 'js-cookie';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -14,16 +15,19 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!Cookies.get('token'));
   const [user, setUser] = useState<{ username: string } | null>(null);
-  const isAuthenticated = !!user;
 
   const login = (userData: { username: string }) => {
     setUser(userData);
+    setIsAuthenticated(true);
     console.log("Auth Context: User logged in", userData);
   };
 
   const logout = () => {
+    Cookies.remove('token');
     setUser(null);
+    setIsAuthenticated(false);
     console.log("Auth Context: User logged out");
   };
 
