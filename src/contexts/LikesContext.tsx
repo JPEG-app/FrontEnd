@@ -1,8 +1,7 @@
-// src/contexts/LikesContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useAuthContext } from './AuthContext'; // We need this to know if the user is logged in
+import { useAuthContext } from './AuthContext';
 
 interface LikesContextType {
   likedPostIds: Set<string>;
@@ -19,9 +18,8 @@ export const LikesProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Only fetch likes if the user is authenticated
     if (!isAuthenticated) {
-      setLikedPostIds(new Set()); // Clear likes on logout
+      setLikedPostIds(new Set());
       setIsLoading(false);
       return;
     }
@@ -33,8 +31,7 @@ export const LikesProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const response = await axios.get('https://api.jpegapp.lol/users/me/likes', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        // Assuming the response is { likedPostIds: ["id1", "id2"] }
-        setLikedPostIds(new Set(response.data.likedPostIds));
+        setLikedPostIds(new Set(response.data.likedPostIds || []));
       } catch (error) {
         console.error("Failed to fetch user likes:", error);
       } finally {
@@ -43,7 +40,7 @@ export const LikesProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     fetchUserLikes();
-  }, [isAuthenticated]); // Re-fetch when authentication state changes
+  }, [isAuthenticated]);
 
   const addLike = (postId: string) => {
     setLikedPostIds(prev => new Set(prev).add(postId));
