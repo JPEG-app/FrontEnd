@@ -7,7 +7,7 @@ const SignupPage: React.FC = () => {
     // State for all three required fields
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [passwordhash, setPassword] = useState('');
 
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const SignupPage: React.FC = () => {
             const response = await axios.post('https://api.jpegapp.lol/auth/register', {
                 username,
                 email,
-                password,
+                passwordhash,
             });
 
             console.log('Registration successful:', response.data);
@@ -95,7 +95,7 @@ const SignupPage: React.FC = () => {
                             type="password"
                             autoComplete="new-password"
                             required
-                            value={password}
+                            value={passwordhash}
                             onChange={(e) => setPassword(e.target.value)}
                             disabled={isLoading}
                             placeholder="Password"
