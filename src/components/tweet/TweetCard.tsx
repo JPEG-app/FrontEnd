@@ -1,31 +1,22 @@
 // src/components/tweet/TweetCard.tsx
 import React from 'react';
-import { useLikes } from '../../contexts/LikesContext';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
-import { FaRegComment, FaRegHeart, FaHeart, FaShareSquare } from 'react-icons/fa';
+import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
 
-// CRITICAL FIX #1: The component props MUST declare that it accepts onLikeToggle.
 export interface TweetCardProps {
   tweet: Tweet;
-  onLikeToggle: (tweetId: string, isCurrentlyLiked: boolean) => void;
 }
 
-const HARDCODED_AVATAR_URL = '/pfp.jpg';
+const HARDCODED_AVATAR_URL = './user.jpg';
 
-const TweetCard: React.FC<TweetCardProps> = ({ tweet, onLikeToggle }) => {
-  const { likedPostIds } = useLikes();
-  const isLikedByCurrentUser = likedPostIds.has(tweet.id);
-
+const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
-  // CRITICAL FIX #2: This handler function connects the user's click to the prop.
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevents other click events on the card from firing.
-    // This calls the function that lives in HomePage.tsx
-    onLikeToggle(tweet.id, isLikedByCurrentUser);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -42,23 +33,30 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet, onLikeToggle }) => {
             {formatDate(tweet.createdAt)}
           </span>
         </div>
+        {tweet.title && <h3 className="text-lg font-semibold mt-1">{tweet.title}</h3>}
         <p className="my-1 whitespace-pre-wrap text-gray-50">{tweet.content}</p>
-        
+        {tweet.imageUrl && (
+          <div className="mt-2 rounded-xl overflow-hidden border border-gray-700">
+            <img src={tweet.imageUrl} alt="Tweet image" className="w-full h-auto object-cover" />
+          </div>
+        )}
         <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
           <button className="flex items-center hover:text-twitter-blue group">
             <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
           </button>
-          
-          {/* CRITICAL FIX #3: The button's onClick now calls our handler. */}
-          <button onClick={handleLikeClick} className={`flex items-center group ${isLikedByCurrentUser ? 'text-red-500' : 'hover:text-red-500'}`}>
-            {isLikedByCurrentUser 
-              ? <FaHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} /> 
-              : <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
-            }
+          {/* <button className="flex items-center hover:text-green-500 group">
+            <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
+          </button> */}
+          <button className="flex items-center hover:text-red-500 group">
+            <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
           </button>
-          
+          {/* <button className="flex items-center hover:text-twitter-blue group">
+            <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
+            <span className="ml-1 text-xs">{tweet.stats?.views ?? 0}</span>
+          </button> */}
           <button className="hover:text-twitter-blue group">
              <FaShareSquare className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28}/>
           </button>
