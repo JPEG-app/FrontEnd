@@ -128,7 +128,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
+    <div className="flex flex-col h-screen bg-black text-white">
       <div className="sticky top-0 backdrop-blur-md z-10 border-b border-gray-700/75 flex-shrink-0">
         <h1 className="font-bold text-xl p-4">Home</h1>
       </div>
