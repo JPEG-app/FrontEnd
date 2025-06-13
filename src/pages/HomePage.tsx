@@ -70,22 +70,19 @@ const HomePage: React.FC = () => {
     const token = Cookies.get('token');
     if (!token || tweetId.startsWith('temp-')) return;
     
-    if (isCurrentlyLiked) removeLikeFromContext(tweetId); else addLikeToContext(tweetId);
+    const authHeader = { headers: { Authorization: `Bearer ${token}` } };
     
-    setTweets(currentTweets => currentTweets.map(t => t.id === tweetId ? { ...t, stats: { ...t.stats, likes: (t.stats?.likes ?? 0) + (isCurrentlyLiked ? -1 : 1) } } : t));
-    
-    try {
-      const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-      if (isCurrentlyLiked) {
-        await axios.delete(`https://api.jpegapp.lol/posts/${tweetId}/like`, authHeader);
-      } else {
-        await axios.post(`https://api.jpegapp.lol/posts/${tweetId}/like`, {}, authHeader);
-      }
-    } catch (err) {
-      console.error("Failed to update like status:", err);
-      if (isCurrentlyLiked) addLikeToContext(tweetId); else removeLikeFromContext(tweetId);
-      setTweets(currentTweets => currentTweets.map(t => t.id === tweetId ? { ...t, stats: { ...t.stats, likes: (t.stats?.likes ?? 0) + (isCurrentlyLiked ? 1 : -1) } } : t));
+    if (isCurrentlyLiked) {
+      removeLikeFromContext(tweetId); 
+      await axios.delete(`https://api.jpegapp.lol/posts/${tweetId}/like`, authHeader);
+      isCurrentlyLiked = !isCurrentlyLiked; }
+    else {
+      addLikeToContext(tweetId);
+      await axios.post(`https://api.jpegapp.lol/posts/${tweetId}/like`, {}, authHeader);
+      isCurrentlyLiked = !isCurrentlyLiked;
     }
+    
+    setTweets(await axios.get('https://api.jpegapp.lol/posts/${tweetId}/likes/count'));
   };
 
   return (
