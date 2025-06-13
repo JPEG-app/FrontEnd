@@ -1,4 +1,3 @@
-// src/components/tweet/TweetCard.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Tweet } from '../../types';
@@ -12,7 +11,8 @@ export interface TweetCardProps {
 const HARDCODED_AVATAR_URL = './user.jpg';
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
-  const [likeCount, setLikeCount] = useState<number>(tweet.stats?.likes ?? 0);
+  const [likeCount, setLikeCount] = useState<number>();
+  const [liked, setLiked] = useState<Boolean>();
 
   useEffect(() => {
     const token = document.cookie
@@ -31,6 +31,17 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
 
         if (typeof response.data.count === 'number') {
           setLikeCount(response.data.count);
+        }
+
+        const response2 = await axios.get(
+          `https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (typeof response2.data.hasLiked === 'boolean') {
+          setLiked(response.data.count);
         }
       } catch (error) {
         if (axios.isCancel(error)) {
@@ -74,7 +85,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
         )}
         <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
           <button className="flex items-center hover:text-twitter-blue group">
-            <FaRegComment className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
+            <FaRegComment className="{group-hover}:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
           </button>
           {/* <button className="flex items-center hover:text-green-500 group">
@@ -82,8 +93,12 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
           <button className="flex items-center hover:text-red-500 group">
-            <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
-            {/* Use the state variable for the like count */}
+          <FaRegHeart
+            className={`rounded-full p-1.5 group-hover:bg-red-500/10 ${
+              liked ? "text-red-500" : "text-gray-500"
+            }`}
+            size={28}
+          />
             <span className="ml-1 text-xs">{likeCount}</span>
           </button>
           {/* <button className="flex items-center hover:text-twitter-blue group">
