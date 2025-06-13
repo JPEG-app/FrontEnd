@@ -1,5 +1,6 @@
 // src/components/tweet/TweetCard.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
@@ -11,6 +12,37 @@ export interface TweetCardProps {
 const HARDCODED_AVATAR_URL = './user.jpg';
 
 const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
+  const [likeCount, setLikeCount] = useState<number>(tweet.stats?.likes ?? 0);
+
+  useEffect(() => {
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+
+    const fetchLikeCount = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (typeof response.data.count === 'number') {
+          setLikeCount(response.data.count);
+        }
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          return;
+        }
+        console.error(`Failed to fetch like count for tweet ${tweet.id}:`, error);
+      }
+    };
+
+    fetchLikeCount();
+  }, [tweet.id]); 
+
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -51,7 +83,8 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
           </button> */}
           <button className="flex items-center hover:text-red-500 group">
             <FaRegHeart className="group-hover:bg-red-500/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{tweet.stats?.likes ?? 0}</span>
+            {/* Use the state variable for the like count */}
+            <span className="ml-1 text-xs">{likeCount}</span>
           </button>
           {/* <button className="flex items-center hover:text-twitter-blue group">
             <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
