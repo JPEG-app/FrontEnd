@@ -8,6 +8,7 @@ export interface ApiFeedItem {
   updatedAt: string; 
   imageUrl?: string;
   likeCount?: number;
+  hasUserLiked: Boolean;
   commentCount?: number;
 }
 
@@ -24,12 +25,8 @@ export interface Tweet {
   title?: string;
   content: string;
   createdAt: Date;  
-  stats?: {
-    replies?: number;
-    retweets?: number;
-    likes?: number;
-    views?: number;
-  };
+  likeCount: number;
+  hasUserLiked: Boolean;
   imageUrl?: string;
 }
 

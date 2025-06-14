@@ -21,12 +21,8 @@ const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
     content: apiItem.postContent,
     createdAt: new Date(apiItem.createdAt),
     imageUrl: apiItem.imageUrl,
-    stats: {
-      replies: apiItem.commentCount ?? 0,
-      retweets: 0,
-      likes: apiItem.likeCount ?? 0,
-      views: 0,
-    },
+    hasUserLiked: apiItem.hasUserLiked,
+    likeCount: apiItem.likeCount || 0
   };
 };
 
@@ -34,8 +30,8 @@ const HomePage: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
-  const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
+  // const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  // const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -81,42 +77,42 @@ const HomePage: React.FC = () => {
     fetchFeed();
   }, []);
 
-  const token = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('token='))
-      ?.split('=')[1];
+  // const token = document.cookie
+  //     .split('; ')
+  //     .find(row => row.startsWith('token='))
+  //     ?.split('=')[1];
 
-  useEffect(() => {
-    const fetchAllLikes = async () => {
-      if (!token || tweets.length === 0) return;
+  // useEffect(() => {
+  //   const fetchAllLikes = async () => {
+  //     if (!token || tweets.length === 0) return;
 
-      const likeMap: Record<string, number> = {};
-      const likedMap: Record<string, boolean> = {};
+  //     const likeMap: Record<string, number> = {};
+  //     const likedMap: Record<string, boolean> = {};
 
-      await Promise.all(tweets.map(async (tweet) => {
-        try {
-          const [countRes, statusRes] = await Promise.all([
-            axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
+  //     await Promise.all(tweets.map(async (tweet) => {
+  //       try {
+  //         const [countRes, statusRes] = await Promise.all([
+  //           axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+  //             headers: { Authorization: `Bearer ${token}` },
+  //           }),
+  //           axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
+  //             headers: { Authorization: `Bearer ${token}` },
+  //           }),
+  //         ]);
 
-          likeMap[tweet.id] = countRes.data?.count ?? 0;
-          likedMap[tweet.id] = statusRes.data?.hasLiked ?? false;
-        } catch (error) {
-          console.error(`Failed to fetch like data for tweet ${tweet.id}:`, error);
-        }
-      }));
+  //         likeMap[tweet.id] = countRes.data?.count ?? 0;
+  //         likedMap[tweet.id] = statusRes.data?.hasLiked ?? false;
+  //       } catch (error) {
+  //         console.error(`Failed to fetch like data for tweet ${tweet.id}:`, error);
+  //       }
+  //     }));
 
-      setLikeCounts(likeMap);
-      setLikedStatus(likedMap);
-    };
+  //     setLikeCounts(likeMap);
+  //     setLikedStatus(likedMap);
+  //   };
 
-    fetchAllLikes();
-  }, [tweets, token]);
+  //   fetchAllLikes();
+  // }, [tweets, token]);
 
   const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
     try {
@@ -145,7 +141,8 @@ const HomePage: React.FC = () => {
         id: `temp-${Date.now()}`,
         author: currentUserAuthor, 
         createdAt: new Date(),
-        stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
+        likeCount: 0,
+        hasUserLiked: false
       };
 
       setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
@@ -193,8 +190,8 @@ const HomePage: React.FC = () => {
                 >
                   <TweetCard
                     tweet={tweet}
-                    likeCount={likeCounts[tweet.id] || 0}
-                    liked={likedStatus[tweet.id] || false}
+                    // likeCount={likeCounts[tweet.id] || 0}
+                    // liked={likedStatus[tweet.id] || false}
                   />
                 </div>
               );

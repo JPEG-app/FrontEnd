@@ -7,13 +7,13 @@ import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
 
 export interface TweetCardProps {
   tweet: Tweet;
-  likeCount: number;
-  liked: Boolean;
+  // likeCount: number;
+  // liked: Boolean;
 }
 
 const HARDCODED_AVATAR_URL = './user.jpg';
 
-const TweetCard: React.FC<TweetCardProps> = ({ tweet, likeCount, liked }) => {
+const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -46,15 +46,15 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet, likeCount, liked }) => {
         <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
           <button className="flex items-center hover:text-twitter-blue group">
             <FaRegComment className="{group-hover}:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{tweet.stats?.replies ?? 0}</span>
+            <span className="ml-1 text-xs">{0}</span>
           </button>
           {/* <button className="flex items-center hover:text-green-500 group">
             <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
-          <button className={`flex items-center ${ liked ? "text-red-500" : "10" } group`}>
+          <button className={`flex items-center ${ tweet.hasUserLiked ? "text-red-500" : "10" } group`}>
             <FaRegHeart className={`rounded-full p-1.5 `} size={28} />
-            <span className="ml-1 text-xs">{likeCount}</span>
+            <span className="ml-1 text-xs">{tweet.likeCount}</span>
           </button>
           {/* <button className="flex items-center hover:text-twitter-blue group">
             <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
