@@ -30,8 +30,6 @@ const HomePage: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
-  // const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -76,43 +74,6 @@ const HomePage: React.FC = () => {
     };
     fetchFeed();
   }, []);
-
-  // const token = document.cookie
-  //     .split('; ')
-  //     .find(row => row.startsWith('token='))
-  //     ?.split('=')[1];
-
-  // useEffect(() => {
-  //   const fetchAllLikes = async () => {
-  //     if (!token || tweets.length === 0) return;
-
-  //     const likeMap: Record<string, number> = {};
-  //     const likedMap: Record<string, boolean> = {};
-
-  //     await Promise.all(tweets.map(async (tweet) => {
-  //       try {
-  //         const [countRes, statusRes] = await Promise.all([
-  //           axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }),
-  //           axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }),
-  //         ]);
-
-  //         likeMap[tweet.id] = countRes.data?.count ?? 0;
-  //         likedMap[tweet.id] = statusRes.data?.hasLiked ?? false;
-  //       } catch (error) {
-  //         console.error(`Failed to fetch like data for tweet ${tweet.id}:`, error);
-  //       }
-  //     }));
-
-  //     setLikeCounts(likeMap);
-  //     setLikedStatus(likedMap);
-  //   };
-
-  //   fetchAllLikes();
-  // }, [tweets, token]);
 
   const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
     try {
@@ -190,8 +151,6 @@ const HomePage: React.FC = () => {
                 >
                   <TweetCard
                     tweet={tweet}
-                    // likeCount={likeCounts[tweet.id] || 0}
-                    // liked={likedStatus[tweet.id] || false}
                   />
                 </div>
               );
