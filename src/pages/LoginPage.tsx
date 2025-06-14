@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             disabled={isLoading}
-                            placeholder="Username or Email"
+                            placeholder="Email"
                             className="w-full px-4 py-2 border border-gray-700 rounded-md bg-black text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-twitter-blue focus:border-transparent disabled:opacity-50"
                         />
                     </div>

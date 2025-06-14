@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 
 import { User, Tweet, Author } from '../types';
 import Avatar from '../components/common/Avatar';
-// import TweetCard from '../components/tweet/TweetCard';
+import TweetCard from '../components/tweet/TweetCard'; // ✅ Uncommented
 import { FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 
 const STATIC_AVATAR_URL = '/pfp.jpg';
@@ -34,6 +34,8 @@ const ProfilePage: React.FC = () => {
   const [userTweets, setUserTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const [likedStatuses, setLikedStatuses] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!userId) return;
@@ -52,8 +54,8 @@ const ProfilePage: React.FC = () => {
 
       try {
         const [userResponse, postsResponse] = await Promise.all([
-            axios.get(`https://api.jpegapp.lol/users/${userId}`, authHeader),
-            axios.get(`https://api.jpegapp.lol/users/${userId}/posts`, authHeader)
+          axios.get(`https://api.jpegapp.lol/users/${userId}`, authHeader),
+          axios.get(`https://api.jpegapp.lol/users/${userId}/posts`, authHeader)
         ]);
 
         const apiUser = userResponse.data;
@@ -91,6 +93,43 @@ const ProfilePage: React.FC = () => {
 
     fetchProfileData();
   }, [userId]);
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token || userTweets.length === 0) return;
+
+    const fetchLikes = async () => {
+      try {
+        const updatedLikeCounts: Record<string, number> = {};
+        const updatedLikedStatuses: Record<string, boolean> = {};
+
+        await Promise.all(userTweets.map(async (tweet) => {
+          try {
+            const [countRes, statusRes] = await Promise.all([
+              axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+              axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            ]);
+
+            updatedLikeCounts[tweet.id] = countRes.data.count ?? 0;
+            updatedLikedStatuses[tweet.id] = statusRes.data.hasLiked ?? false;
+          } catch (err) {
+            console.error(`Failed to fetch like info for tweet ${tweet.id}:`, err);
+          }
+        }));
+
+        setLikeCounts(updatedLikeCounts);
+        setLikedStatuses(updatedLikedStatuses);
+      } catch (err) {
+        console.error("Error fetching like info:", err);
+      }
+    };
+
+    fetchLikes();
+  }, [userTweets]);
 
   if (isLoading) {
     return <div className="p-4 text-center text-gray-500">Loading profile...</div>;
@@ -150,22 +189,21 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Profile Tabs */}
-      {/* <div className="flex justify-around border-b border-gray-700/75">
-        <button className="flex-1 py-3 text-center font-bold text-sm hover:bg-gray-800/40 transition-colors duration-150 border-b-2 border-twitter-blue">Posts</button>
-        <button className="flex-1 py-3 text-center font-medium text-sm text-gray-500 hover:bg-gray-800/40 transition-colors duration-150">Replies</button>
-        <button className="flex-1 py-3 text-center font-medium text-sm text-gray-500 hover:bg-gray-800/40 transition-colors duration-150">Media</button>
-        <button className="flex-1 py-3 text-center font-medium text-sm text-gray-500 hover:bg-gray-800/40 transition-colors duration-150">Likes</button>
-      </div> */}
-
       {/* User Tweets */}
-      {/* <div>
+      <div>
         {userTweets.length > 0 ? (
-          userTweets.map(tweet => <TweetCard key={tweet.id} tweet={tweet} />)
+          userTweets.map(tweet => (
+            <TweetCard
+              key={tweet.id}
+              tweet={tweet}
+              likeCount={likeCounts[tweet.id] ?? 0}
+              liked={likedStatuses[tweet.id] ?? false}
+            />
+          ))
         ) : (
           <p className="p-4 text-center text-gray-500">{user.handle} hasn't posted yet.</p>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

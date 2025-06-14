@@ -47,7 +47,7 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
           type="text"
           value={tweetTitle}
           onChange={(e) => setTweetTitle(e.target.value)}
-          placeholder="Title (optional)"
+          placeholder="Title"
           className="w-full bg-transparent text-md resize-none outline-none placeholder-gray-500 text-gray-100 py-1 mb-1"
         />
         <textarea
@@ -59,12 +59,12 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
           rows={2}
         />
         <div className="flex justify-between items-center mt-2">
-          {/* <div className="flex space-x-1 text-twitter-blue">
-            <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaImage size={18}/></button>
+          <div className="flex space-x-1 text-twitter-blue">
+            {/* <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaImage size={18}/></button>
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaPollH size={18}/></button>
             <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaSmile size={18}/></button>
-            <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaCalendarAlt size={18}/></button>
-          </div> */}
+            <button className="hover:bg-twitter-blue/10 rounded-full p-2 transition-colors duration-150"><FaCalendarAlt size={18}/></button> */}
+          </div>
           <div className="flex items-center space-x-3">
             {tweetContent.length > 0 && (
                  <span className={`text-sm ${tweetContent.length > maxLength - 20 ? 'text-red-500' : 'text-gray-500'}`}>
