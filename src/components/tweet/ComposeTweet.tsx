@@ -30,7 +30,8 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
         title: tweetTitle,
         content: tweetContent,
         createdAt: new Date(), 
-        stats: { replies: 0, retweets: 0, likes: 0, views: 0 },
+        likeCount: 0,
+        hasUserLiked: false
     };
     onTweetPosted(newTweet);
     setTweetContent('');
