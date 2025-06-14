@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 
 import { User, Tweet, Author } from '../types';
 import Avatar from '../components/common/Avatar';
-import TweetCard from '../components/tweet/TweetCard';
+// import TweetCard from '../components/tweet/TweetCard';
 import { FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 
 const STATIC_AVATAR_URL = '/pfp.jpg';
@@ -159,13 +159,13 @@ const ProfilePage: React.FC = () => {
       </div> */}
 
       {/* User Tweets */}
-      <div>
+      {/* <div>
         {userTweets.length > 0 ? (
           userTweets.map(tweet => <TweetCard key={tweet.id} tweet={tweet} />)
         ) : (
           <p className="p-4 text-center text-gray-500">{user.handle} hasn't posted yet.</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

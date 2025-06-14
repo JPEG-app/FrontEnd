@@ -1,53 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import React, { useState, useEffect } from 'react';
+import React from 'react';
+// import axios from 'axios';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
 
 export interface TweetCardProps {
   tweet: Tweet;
+  likeCount: number;
+  liked: Boolean;
 }
 
 const HARDCODED_AVATAR_URL = './user.jpg';
 
-const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
-  const [likeCount, setLikeCount] = useState<number>();
-  const [liked, setLiked] = useState<Boolean>();
-
-  useEffect(() => {
-    const token = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('token='))
-      ?.split('=')[1];
-
-    const fetchLikeCount = async () => {
-      try {
-        const [countRes, statusRes] = await Promise.all([
-          axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/likes/count`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`https://api.jpegapp.lol/posts/${tweet.id}/like/status`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-  
-        if (typeof countRes.data.count === 'number') {
-          setLikeCount(countRes.data.count);
-        }
-        if (typeof statusRes.data.hasLiked === 'boolean') {
-          setLiked(statusRes.data.hasLiked);
-        }
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return;
-        }
-        console.error(`Failed to fetch like count for tweet ${tweet.id}:`, error);
-      }
-    };
-
-    fetchLikeCount();
-  }, [tweet.id]); 
-
+const TweetCard: React.FC<TweetCardProps> = ({ tweet, likeCount, liked }) => {
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -86,8 +52,8 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
             <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
-          <button className={`flex items-center group`}>
-            <FaRegHeart className={`rounded-full p-1.5 ${ liked ? "bg-red-500" : "10" }`} size={28} />
+          <button className={`flex items-center ${ liked ? "text-red-500" : "10" } group`}>
+            <FaRegHeart className={`rounded-full p-1.5 `} size={28} />
             <span className="ml-1 text-xs">{likeCount}</span>
           </button>
           {/* <button className="flex items-center hover:text-twitter-blue group">
