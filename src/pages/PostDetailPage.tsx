@@ -45,21 +45,17 @@ const PostDetailPage: React.FC = () => {
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
       try {
-        // Step 1: Fetch the single post by its ID
         const postResponse = await axios.get(`https://api.jpegapp.lol/posts/${postId}`, authHeader);
         const apiPost = postResponse.data;
 
-        // Step 2: Get the authorId from the post data
         const authorId = apiPost.userId;
         if (!authorId) {
             throw new Error("Post data is missing an author ID.");
         }
 
-        // Step 3: Fetch the author's user details using the authorId
         const userResponse = await axios.get(`https://api.jpegapp.lol/users/${authorId}`, authHeader);
         const apiUser = userResponse.data;
         
-        // Step 4: Construct the Author object from the fetched user details
         const authorDetails: Author = {
           id: apiUser.id,
           name: apiUser.username,
@@ -67,7 +63,6 @@ const PostDetailPage: React.FC = () => {
           avatarUrl: STATIC_AVATAR_URL,
         };
 
-        // Step 5: Combine the post data and the new author details
         const fetchedTweet = mapApiItemToTweet(apiPost, authorDetails);
         setTweet(fetchedTweet);
 

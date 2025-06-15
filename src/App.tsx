@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { useAuthContext } from './contexts/AuthContext'; 
 import PostDetailPage from './pages/PostDetailPage';
+import { MessagesPage } from './pages/MessagesPage';
+import { NewChannelPage } from './pages/NewChannelPage';
 
 function App() {
   const { isAuthenticated } = useAuthContext();
@@ -21,6 +23,8 @@ function App() {
                   <MainLayout>
                       <Routes>
                           <Route path="/" element={<HomePage />} />
+                          <Route path="/messages" element={<MessagesPage />} />
+                          <Route path="/messages/new" element={<NewChannelPage />} />
                           <Route path="/post/:postId" element={<PostDetailPage />} /> 
                           <Route path="/profile/:userHandle" element={<ProfilePage />} /> 
                           <Route path="*" element={<div className="p-4 text-center text-red-500">Page Not Found</div>} />

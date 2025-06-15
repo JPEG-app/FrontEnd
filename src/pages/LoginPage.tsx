@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaTwitter, FaEye, FaEyeSlash } from 'react-icons/fa'; 
 import axios from 'axios';
 import { useAuthContext } from '../contexts/AuthContext';
-import Cookies from 'js-cookie';
 
 const LoginPage: React.FC = () => {
     const { login } = useAuthContext();
@@ -21,18 +20,16 @@ const LoginPage: React.FC = () => {
 
         try {
             const response = await axios.post('https://api.jpegapp.lol/auth/login', { email: username, password: password });
-            console.log('Login successful:', response.data);
-            const { token, username: responseUsername } = response.data;
-            if (token) {
-                Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'lax' });            
-                login({ username: responseUsername || username }); 
+            
+            const { token, streamToken } = response.data;
+            if (token && streamToken) {
+                await login(token, streamToken);
                 navigate('/');
             } else {
-                throw new Error("Login successful, but no token was provided by the server.");
+                throw new Error("Login successful, but tokens were not provided by the server.");
             }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed. Please check credentials.');
-            console.error("Login error:", err);
         } finally {
             setIsLoading(false);
         }
@@ -48,7 +45,6 @@ const LoginPage: React.FC = () => {
                 <h1 className="text-2xl font-bold text-center">Log in</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Username/Email Input */}
                     <div>
                         <label htmlFor="username" className="sr-only">Email</label>
                         <input
@@ -65,7 +61,6 @@ const LoginPage: React.FC = () => {
                         />
                     </div>
 
-                    {/* Password Input and Button Container */}
                     <div className="relative">
                         <label htmlFor="password" className="sr-only">Password</label>
                         <input
@@ -90,12 +85,10 @@ const LoginPage: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Error Message */}
                     {error && (
                         <p className="text-sm text-red-500 text-center">{error}</p>
                     )}
 
-                    {/* Submit Button */}
                     <div>
                         <button
                             type="submit"
@@ -106,7 +99,6 @@ const LoginPage: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Links */}
                     <div className="flex items-center justify-end text-sm">
                         <Link
                             to="/register"
