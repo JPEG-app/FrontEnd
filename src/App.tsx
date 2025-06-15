@@ -2,11 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import MainLayout from './components/layout/MainLayout';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
-import ExplorePage from './pages/ExplorePage';
-import NotificationsPage from './pages/NotificationsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { useAuthContext } from './contexts/AuthContext'; 
+import PostDetailPage from './pages/PostDetailPage';
 
 function App() {
   const { isAuthenticated } = useAuthContext();
@@ -22,9 +21,7 @@ function App() {
                   <MainLayout>
                       <Routes>
                           <Route path="/" element={<HomePage />} />
-                          <Route path="/explore" element={<ExplorePage />} />
-                          <Route path="/notifications" element={<NotificationsPage />} />
-                          {/* The profile page route should be specific to avoid conflicts */}
+                          <Route path="/post/:postId" element={<PostDetailPage />} /> 
                           <Route path="/profile/:userHandle" element={<ProfilePage />} /> 
                           <Route path="*" element={<div className="p-4 text-center text-red-500">Page Not Found</div>} />
                       </Routes>
