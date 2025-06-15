@@ -31,7 +31,9 @@ const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [author, setAuthor] = useState<Author>();
-
+  const [isAuthorLoading, setIsAuthorLoading] = useState(true);
+  const [authorError, setAuthorError] = useState<string | null>(null);
+  
   const parentRef = useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
@@ -43,6 +45,41 @@ const HomePage: React.FC = () => {
     }, []),
     overscan: 5,
   });
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      setIsAuthorLoading(true);
+      setAuthorError(null);
+      try {
+        const token = Cookies.get('token');
+        if (!token) {
+          throw new Error("Authentication token not found.");
+        }
+        const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+        
+        const userResponse = await axios.get<{ id: string, username: string }>('https://api.jpegapp.lol/users/me', authHeader);
+        const { id: userId, username } = userResponse.data;
+
+        if (!userId || !username) {
+          throw new Error("Could not retrieve user details.");
+        }
+
+        const currentUserAuthor: Author = {
+          id: userId,
+          name: username,
+          handle: `@${username.toLowerCase().replace(/\s+/g, '')}`,
+          avatarUrl: undefined, 
+        };
+        setAuthor(currentUserAuthor);
+      } catch (err: any) {
+        setAuthorError(err.message || "Failed to fetch user.");
+      } finally {
+        setIsAuthorLoading(false);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -83,26 +120,11 @@ const HomePage: React.FC = () => {
         throw new Error("Authentication token not found.");
       }
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-      
-      const userResponse = await axios.get<{ id: string, username: string }>('https://api.jpegapp.lol/users/me', authHeader);
-      const { id: userId, username } = userResponse.data;
-
-      if (!userId || !username) {
-        throw new Error("Could not retrieve user details.");
-      }
-
-      const currentUserAuthor: Author = {
-        id: userId,
-        name: username,
-        handle: `@${username.toLowerCase().replace(/\s+/g, '')}`,
-        avatarUrl: undefined, 
-      };
-      setAuthor(currentUserAuthor);
 
       const optimisticallyAddedTweet: Tweet = {
         ...newlyComposedTweet,
         id: `temp-${Date.now()}`,
-        author: currentUserAuthor, 
+        author: author as Author, 
         createdAt: new Date(),
         likeCount: 0,
         hasUserLiked: false
@@ -111,7 +133,7 @@ const HomePage: React.FC = () => {
       setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
       
       const payload = {
-        userId: userId,
+        userId: author?.id,
         title: newlyComposedTweet.title || "",
         content: newlyComposedTweet.content,
       };
@@ -131,6 +153,12 @@ const HomePage: React.FC = () => {
       <div className="sticky top-0 backdrop-blur-md z-10 border-b border-gray-700/75 flex-shrink-0">
         <h1 className="font-bold text-xl p-4">Home</h1>
       </div>
+      <div className='flex-shrink-0 border-b border-gray-700/75'>
+        {isAuthorLoading && <div className="p-4 text-center text-gray-400">Loading...</div>}
+        {authorError && <div className="p-4 text-center text-red-400">{authorError}</div>}
+        {author && <ComposeTweet onTweetPosted={handleTweetPosted} author={author}/>}
+      </div>
+      
       <div className='flex-shrink-0 border-b border-gray-700/75'>
         <ComposeTweet onTweetPosted={handleTweetPosted} author={author as Author}/>
       </div>
