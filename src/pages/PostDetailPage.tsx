@@ -50,7 +50,7 @@ const PostDetailPage: React.FC = () => {
         const apiPost = postResponse.data;
 
         // Step 2: Get the authorId from the post data
-        const authorId = apiPost.authorId;
+        const authorId = apiPost.userId;
         if (!authorId) {
             throw new Error("Post data is missing an author ID.");
         }
