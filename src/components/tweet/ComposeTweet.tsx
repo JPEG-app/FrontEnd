@@ -3,6 +3,8 @@ import Avatar from '../common/Avatar';
 import { Tweet, Author } from '../../types';
 // import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
 
+const HARDCODED_AVATAR_URL = './user.jpg';
+
 interface ComposeTweetProps {
     onTweetPosted: (newTweet: Tweet) => void;
     author: Author
@@ -34,7 +36,7 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted, author }) =>
   return (
     <div className="flex p-3 border-b border-gray-700/75">
       <div className="mr-3 flex-shrink-0">
-        <Avatar src={author.avatarUrl} alt={author.name} />
+        <Avatar src={HARDCODED_AVATAR_URL} alt={author.name} />
       </div>
       <div className="flex-grow">
         <input
