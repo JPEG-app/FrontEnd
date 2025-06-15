@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const connectUser = async (currentUser: User, token: string) => {
-        const chat = new StreamChat(import.meta.env.VITE_STREAM_API_KEY!);
+        const chat = new StreamChat("d683phfa73sf");
         await chat.connectUser(
           { id: currentUser.id, name: currentUser.name, image: currentUser.avatarUrl },
           token
