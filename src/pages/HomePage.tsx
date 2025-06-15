@@ -17,8 +17,8 @@ const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
   return {
     id: apiItem.postId,
     author: authorInfo,
-    title: apiItem.postTitle,
-    content: apiItem.postContent,
+    title: apiItem.title,
+    content: apiItem.content,
     createdAt: new Date(apiItem.createdAt),
     imageUrl: apiItem.imageUrl,
     hasUserLiked: apiItem.hasUserLiked,
@@ -30,6 +30,7 @@ const HomePage: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [author, setAuthor] = useState<Author>();
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +97,8 @@ const HomePage: React.FC = () => {
         handle: `@${username.toLowerCase().replace(/\s+/g, '')}`,
         avatarUrl: undefined, 
       };
-      
+      setAuthor(currentUserAuthor);
+
       const optimisticallyAddedTweet: Tweet = {
         ...newlyComposedTweet,
         id: `temp-${Date.now()}`,
@@ -130,7 +132,7 @@ const HomePage: React.FC = () => {
         <h1 className="font-bold text-xl p-4">Home</h1>
       </div>
       <div className='flex-shrink-0 border-b border-gray-700/75'>
-        <ComposeTweet onTweetPosted={handleTweetPosted} />
+        <ComposeTweet onTweetPosted={handleTweetPosted} author={author as Author}/>
       </div>
 
       <div ref={parentRef} className="flex-grow overflow-auto hide-scrollbar">

@@ -2,8 +2,8 @@ export interface ApiFeedItem {
   postId: string;
   userId: string;
   authorUsername: string;
-  postTitle: string;
-  postContent: string;
+  title: string;
+  content: string;
   createdAt: string; 
   updatedAt: string; 
   imageUrl?: string;

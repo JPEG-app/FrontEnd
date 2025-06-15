@@ -1,14 +1,10 @@
-// import React, { useState, useEffect } from 'react';
 import React from 'react';
-// import axios from 'axios';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
 
 export interface TweetCardProps {
   tweet: Tweet;
-  // likeCount: number;
-  // liked: Boolean;
 }
 
 const HARDCODED_AVATAR_URL = './user.jpg';

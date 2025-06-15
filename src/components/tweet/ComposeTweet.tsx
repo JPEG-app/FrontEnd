@@ -1,32 +1,25 @@
 import React, { useState } from 'react';
 import Avatar from '../common/Avatar'; 
-import { mockUser } from '../../services/mockData'; 
 import { Tweet, Author } from '../../types';
 // import { FaImage, FaPollH, FaSmile, FaCalendarAlt } from 'react-icons/fa';
 
 interface ComposeTweetProps {
     onTweetPosted: (newTweet: Tweet) => void;
+    author: Author
 }
 
-const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
+const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted, author }) => {
   const [tweetContent, setTweetContent] = useState('');
-  const [tweetTitle, setTweetTitle] = useState(''); // If you decide to add title input
+  const [tweetTitle, setTweetTitle] = useState('');
 
   const maxLength = 280;
 
   const handlePostTweet = () => {
     if (!tweetContent.trim()) return;
 
-    const mockAuthor: Author = {
-        id: mockUser.id,
-        name: mockUser.name,
-        handle: mockUser.handle,
-        avatarUrl: mockUser.avatarUrl
-    };
-
     const newTweet: Tweet = {
         id: `t${Date.now()}`,
-        author: mockAuthor,
+        author: author,
         title: tweetTitle,
         content: tweetContent,
         createdAt: new Date(), 
@@ -41,7 +34,7 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted }) => {
   return (
     <div className="flex p-3 border-b border-gray-700/75">
       <div className="mr-3 flex-shrink-0">
-        <Avatar src={mockUser.avatarUrl} alt={mockUser.name} />
+        <Avatar src={author.avatarUrl} alt={author.name} />
       </div>
       <div className="flex-grow">
         <input
