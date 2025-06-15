@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [author, setAuthor] = useState<Author>();
+  const [author, setAuthor] = useState<Author | null>(null);
   const [isAuthorLoading, setIsAuthorLoading] = useState(true);
   const [authorError, setAuthorError] = useState<string | null>(null);
   
@@ -71,6 +71,8 @@ const HomePage: React.FC = () => {
           avatarUrl: undefined, 
         };
         setAuthor(currentUserAuthor);
+        console.log(currentUserAuthor)
+        console.log(author)
       } catch (err: any) {
         setAuthorError(err.message || "Failed to fetch user.");
       } finally {
@@ -111,7 +113,7 @@ const HomePage: React.FC = () => {
       }
     };
     fetchFeed();
-  }, []);
+  }, [author]);
 
   const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
     try {
@@ -158,10 +160,6 @@ const HomePage: React.FC = () => {
         {authorError && <div className="p-4 text-center text-red-400">{authorError}</div>}
         {author && <ComposeTweet onTweetPosted={handleTweetPosted} author={author}/>}
       </div>
-      
-      <div className='flex-shrink-0 border-b border-gray-700/75'>
-        <ComposeTweet onTweetPosted={handleTweetPosted} author={author as Author}/>
-      </div>
 
       <div ref={parentRef} className="flex-grow overflow-auto hide-scrollbar">
         {isLoading && ( <div className="text-gray-400 p-4 text-center">Loading feed...</div> )}
@@ -179,9 +177,7 @@ const HomePage: React.FC = () => {
                   data-index={virtualItem.index}
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${virtualItem.start}px)` }}
                 >
-                  <TweetCard
-                    tweet={tweet}
-                  />
+                  <TweetCard tweet={tweet} />
                 </div>
               );
             })}
