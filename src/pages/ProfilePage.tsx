@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
+import { Link } from 'react-router-dom';
 import { User, Tweet, Author } from '../types';
 import Avatar from '../components/common/Avatar';
 import TweetCard from '../components/tweet/TweetCard'; 
@@ -150,10 +150,12 @@ const ProfilePage: React.FC = () => {
       <div>
         {userTweets.length > 0 ? (
           userTweets.map(tweet => (
-            <TweetCard
-              key={tweet.id}
-              tweet={tweet}
-            />
+            <Link to={`/post/${tweet.id}`}>
+              <TweetCard
+                key={tweet.id}
+                tweet={tweet}
+              />
+            </Link>
           ))
         ) : (
           <p className="p-4 text-center text-gray-500">{user.handle} hasn't posted yet.</p>
