@@ -19,7 +19,7 @@ export function MessagesPage() {
   if (streamChat == null) return <LoadingIndicator />
 
   return (
-    <Chat client={streamChat}>
+    <Chat client={streamChat} theme="str-chat__theme-dark">
       <ChannelList
         List={Channels}
         sendChannelsToList
@@ -42,22 +42,22 @@ function Channels({ loadedChannels }: ChannelListMessengerProps) {
   const { setActiveChannel, channel: activeChannel } = useChatContext()
 
   return (
-    <div className="w-60 flex flex-col gap-4 m-3 h-full">
+    <div className="w-80 flex flex-col gap-4 p-3 h-full border-r border-gray-700/75">
       <Button onClick={() => navigate("/messages/new")}>New Conversation</Button>
-      <hr className="border-gray-500" />
+      <hr className="border-gray-700" />
       {loadedChannels != null && loadedChannels.length > 0
         ? loadedChannels.map(channel => {
             const isActive = channel === activeChannel
             const customData = channel.data as { image?: string; name?: string };
 
             const extraClasses = isActive
-              ? "bg-blue-800 text-white"
-              : "hover:bg-gray-800/80 bg-gray-900"
+              ? "bg-gray-700"
+              : "hover:bg-gray-800/80"
             return (
               <button
                 onClick={() => setActiveChannel(channel)}
                 disabled={isActive}
-                className={`p-4 rounded-lg flex gap-3 items-center w-full ${extraClasses}`}
+                className={`p-3 rounded-lg flex gap-3 items-center w-full text-left ${extraClasses}`}
                 key={channel.id}
               >
                 {customData?.image && (
@@ -72,8 +72,9 @@ function Channels({ loadedChannels }: ChannelListMessengerProps) {
               </button>
             )
           })
-        : "No Conversations"}
-      <hr className="border-gray-500 mt-auto" />
+        : <div className="text-gray-500 text-center p-4">No Conversations</div>
+      }
+      <hr className="border-gray-700 mt-auto" />
       <Button
         onClick={() => logout()}
         className="bg-transparent border-gray-500 hover:bg-gray-800/40"
