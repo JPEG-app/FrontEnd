@@ -8,30 +8,59 @@ import {
   MessageInput,
   MessageList,
   ChannelHeader,
+  useChatContext,
 } from "stream-chat-react"
-import { ChannelListMessengerProps, useChatContext } from "stream-chat-react"
+import { ChannelListMessengerProps } from "stream-chat-react"
 import { useLoggedInAuth } from "../contexts/AuthContext"
 import { Button } from "../components/common/Button"
 
+const EmptyState = () => {
+  return (
+    <div className="h-full flex flex-col items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white">Select a Conversation</h2>
+        <p className="text-gray-400 mt-2">
+          Choose from your existing conversations or start a new one.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ChatContainer = () => {
+  const { channel } = useChatContext();
+
+  return (
+    <div className="flex h-full w-full">
+      <div className="w-80 shrink-0 border-r border-gray-700/75">
+        <ChannelList List={Channels} sendChannelsToList />
+      </div>
+      <div className="flex-grow h-full">
+        {channel ? (
+          <Channel>
+            <Window>
+              <ChannelHeader />
+              <MessageList />
+              <MessageInput />
+            </Window>
+          </Channel>
+        ) : (
+          <EmptyState />
+        )}
+      </div>
+    </div>
+  );
+};
+
+
 export function MessagesPage() {
-  const { user, streamChat } = useLoggedInAuth()
+  const { streamChat } = useLoggedInAuth()
 
   if (streamChat == null) return <LoadingIndicator />
 
   return (
     <Chat client={streamChat} theme="str-chat__theme-dark">
-      <ChannelList
-        List={Channels}
-        sendChannelsToList
-        filters={{ members: { $in: [user.id] } }}
-      />
-      <Channel>
-        <Window>
-          <ChannelHeader />
-          <MessageList />
-          <MessageInput />
-        </Window>
-      </Channel>
+      <ChatContainer />
     </Chat>
   )
 }
@@ -42,9 +71,10 @@ function Channels({ loadedChannels }: ChannelListMessengerProps) {
   const { setActiveChannel, channel: activeChannel } = useChatContext()
 
   return (
-    <div className="w-80 flex flex-col gap-4 p-3 h-full border-r border-gray-700/75">
+    <div className="h-full flex flex-col gap-4 p-3">
       <Button onClick={() => navigate("/messages/new")}>New Conversation</Button>
       <hr className="border-gray-700" />
+      <div className="flex-grow overflow-y-auto">
       {loadedChannels != null && loadedChannels.length > 0
         ? loadedChannels.map(channel => {
             const isActive = channel === activeChannel
@@ -57,7 +87,7 @@ function Channels({ loadedChannels }: ChannelListMessengerProps) {
               <button
                 onClick={() => setActiveChannel(channel)}
                 disabled={isActive}
-                className={`p-3 rounded-lg flex gap-3 items-center w-full text-left ${extraClasses}`}
+                className={`p-3 rounded-lg flex gap-3 items-center w-full text-left my-1 ${extraClasses}`}
                 key={channel.id}
               >
                 {customData?.image && (
@@ -74,6 +104,7 @@ function Channels({ loadedChannels }: ChannelListMessengerProps) {
           })
         : <div className="text-gray-500 text-center p-4">No Conversations</div>
       }
+      </div>
       <hr className="border-gray-700 mt-auto" />
       <Button
         onClick={() => logout()}
