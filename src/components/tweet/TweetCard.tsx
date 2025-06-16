@@ -2,6 +2,7 @@ import React from 'react';
 import { Tweet } from '../../types';
 import Avatar from '../common/Avatar';
 import { FaRegComment, FaRegHeart, FaShareSquare } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 export interface TweetCardProps {
   tweet: Tweet;
@@ -25,7 +26,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
       </div>
       <div className="flex-grow">
         <div className="flex items-center">
-          <span className="font-bold hover:underline">{tweet.author.name}</span>
+          <Link to={`/profile/${tweet.userId}`}><span className="font-bold hover:underline">{tweet.author.name}</span></Link>
           <span className="text-gray-500 ml-2">{tweet.author.handle}</span>
           <span className="text-gray-500 ml-2">·</span>
           <span className="text-gray-500 ml-2 hover:underline" title={tweet.createdAt.toISOString()}>
@@ -40,22 +41,28 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet }) => {
           </div>
         )}
         <div className="flex justify-between text-gray-500 mt-3 max-w-xs">
-          <button className="flex items-center hover:text-twitter-blue group">
-            <FaRegComment className="{group-hover}:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
-            <span className="ml-1 text-xs">{0}</span>
-          </button>
+          <Link to={`/post/${tweet.id}`}>
+            <button className="flex items-center hover:text-twitter-blue group">
+              <FaRegComment className="{group-hover}:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
+              <span className="ml-1 text-xs">{0}</span>
+            </button>
+          </Link>
+
           {/* <button className="flex items-center hover:text-green-500 group">
             <FaRetweet className="group-hover:bg-green-500/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.retweets ?? 0}</span>
           </button> */}
+
           <button className={`flex items-center ${ tweet.hasUserLiked ? "text-red-500" : "10" } group`}>
             <FaRegHeart className={`rounded-full p-1.5 `} size={28} />
             <span className="ml-1 text-xs">{tweet.likeCount}</span>
           </button>
+
           {/* <button className="flex items-center hover:text-twitter-blue group">
             <FaChartBar className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28} />
             <span className="ml-1 text-xs">{tweet.stats?.views ?? 0}</span>
           </button> */}
+          
           <button className="hover:text-twitter-blue group">
              <FaShareSquare className="group-hover:bg-twitter-blue/10 rounded-full p-1.5" size={28}/>
           </button>

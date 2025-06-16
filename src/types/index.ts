@@ -21,6 +21,7 @@ export interface Author {
 
 export interface Tweet {
   id: string;
+  userId: string;
   author: Author; 
   title?: string;
   content: string;

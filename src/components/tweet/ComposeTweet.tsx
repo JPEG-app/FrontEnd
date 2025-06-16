@@ -21,6 +21,7 @@ const ComposeTweet: React.FC<ComposeTweetProps> = ({ onTweetPosted, author }) =>
 
     const newTweet: Tweet = {
         id: `t${Date.now()}`,
+        userId: author.id,
         author: author,
         title: tweetTitle,
         content: tweetContent,

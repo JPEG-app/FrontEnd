@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Link } from 'react-router-dom';
 import { User, Tweet, Author } from '../types';
 import Avatar from '../components/common/Avatar';
 import TweetCard from '../components/tweet/TweetCard'; 
@@ -13,6 +12,7 @@ const STATIC_AVATAR_URL = '/user.jpg';
 const mapApiItemToTweet = (apiItem: any, authorDetails: Author): Tweet => {
   return {
     id: apiItem.id,
+    userId: apiItem.userId,
     author: authorDetails,
     title: apiItem.title,
     content: apiItem.content,
@@ -150,12 +150,10 @@ const ProfilePage: React.FC = () => {
       <div>
         {userTweets.length > 0 ? (
           userTweets.map(tweet => (
-            <Link to={`/post/${tweet.id}`}>
               <TweetCard
                 key={tweet.id}
                 tweet={tweet}
               />
-            </Link>
           ))
         ) : (
           <p className="p-4 text-center text-gray-500">{user.handle} hasn't posted yet.</p>

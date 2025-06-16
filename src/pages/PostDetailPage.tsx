@@ -12,6 +12,7 @@ const STATIC_AVATAR_URL = '/user.jpg';
 const mapApiItemToTweet = (apiItem: any, authorDetails: Author): Tweet => {
   return {
     id: apiItem.id,
+    userId: apiItem.userId,
     author: authorDetails,
     title: apiItem.title,
     content: apiItem.content,

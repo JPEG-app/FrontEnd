@@ -5,7 +5,6 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import TweetCard from '../components/tweet/TweetCard';
 import ComposeTweet from '../components/tweet/ComposeTweet';
 import { Tweet, ApiFeedItem, Author } from '../types';
-import { Link } from 'react-router-dom';
 
 const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
   const authorInfo: Author = {
@@ -17,6 +16,7 @@ const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
 
   return {
     id: apiItem.postId,
+    userId: apiItem.userId,
     author: authorInfo,
     title: apiItem.title,
     content: apiItem.content,
@@ -177,7 +177,6 @@ const HomePage: React.FC = () => {
               const tweet = tweets[virtualItem.index];
               if (!tweet) return null;
               return (
-                <Link to={`/post/${tweet.id}`}>
                   <div
                     key={tweet.id}
                     ref={node => { if (node) { rowVirtualizer.measureElement(node); }}}
@@ -186,7 +185,6 @@ const HomePage: React.FC = () => {
                   >
                     <TweetCard key={tweet.id} tweet={tweet} />
                   </div>
-                </Link>
               );
             })}
           </div>
