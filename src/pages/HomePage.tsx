@@ -179,7 +179,7 @@ const HomePage: React.FC = () => {
                     data-index={virtualItem.index}
                     style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${virtualItem.start}px)` }}
                   >
-                    <TweetCard tweet={tweet} />
+                    <TweetCard key={tweet.id} tweet={tweet} />
                   </div>
                 </Link>
               );
