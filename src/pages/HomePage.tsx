@@ -89,7 +89,12 @@ const HomePage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await axios.get<ApiFeedItem[]>('https://api.jpegapp.lol/feed');
+        const token = Cookies.get('token');
+        if (!token) {
+          throw new Error("Authentication token not found.");
+        }
+        const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.get<ApiFeedItem[]>('https://api.jpegapp.lol/feed', authHeader);
         console.log("Raw feed data from API:", response.data);
 
         if (response.data && Array.isArray(response.data)) {
