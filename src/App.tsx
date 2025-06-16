@@ -8,34 +8,38 @@ import { useAuthContext } from './contexts/AuthContext';
 import PostDetailPage from './pages/PostDetailPage';
 import { MessagesPage } from './pages/MessagesPage';
 import { NewChannelPage } from './pages/NewChannelPage';
+import PrivacyPage from './pages/ToS/PrivacyPage';
+import TermsPage from './pages/ToS/TermsPage';
 
 function App() {
   const { isAuthenticated } = useAuthContext();
-  
-  return (
-      <Router>
-        <Routes>
-          <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />} />
-          <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" replace />} />
 
-          <Route path="/*" element={
-              isAuthenticated ? (
-                  <MainLayout>
-                      <Routes>
-                          <Route path="/" element={<HomePage />} />
-                          <Route path="/messages" element={<MessagesPage />} />
-                          <Route path="/messages/new" element={<NewChannelPage />} />
-                          <Route path="/post/:postId" element={<PostDetailPage />} /> 
-                          <Route path="/profile/:userHandle" element={<ProfilePage />} /> 
-                          <Route path="*" element={<div className="p-4 text-center text-red-500">Page Not Found</div>} />
-                      </Routes>
-                  </MainLayout>
-              ) : (
-                  <Navigate to="/login" replace />
-              )
-          }/>
-        </Routes>
-      </Router>
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />} />
+        <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" replace />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+
+        <Route path="/*" element={
+          isAuthenticated ? (
+            <MainLayout>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/messages/new" element={<NewChannelPage />} />
+                <Route path="/post/:postId" element={<PostDetailPage />} />
+                <Route path="/profile/:userHandle" element={<ProfilePage />} />
+                <Route path="*" element={<div className="p-4 text-center text-red-500">Page Not Found</div>} />
+              </Routes>
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+      </Routes>
+    </Router>
   );
 }
 

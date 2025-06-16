@@ -14,11 +14,19 @@ const SignupPage: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
+        if (!agreedToTerms) {
+            setError('You must agree to the Terms of Service and Privacy Policy.');
+            return;
+        }
+
         if (passwordhash !== confirmPassword) {
             setError('Passwords do not match.');
             return;
@@ -141,6 +149,37 @@ const SignupPage: React.FC = () => {
                     {error && (
                         <p className="text-sm text-red-500 text-center">{error}</p>
                     )}
+
+                    <div className="flex items-start space-x-2 text-sm text-gray-300">
+                        <input
+                            id="terms"
+                            type="checkbox"
+                            checked={agreedToTerms}
+                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                            disabled={isLoading}
+                            className="mt-1 accent-twitter-blue"
+                        />
+                        <label htmlFor="terms">
+                            I agree to the{' '}
+                            <a
+                                href="/terms"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-twitter-blue hover:underline"
+                            >
+                                Terms of Service
+                            </a>{' '}
+                            and{' '}
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-twitter-blue hover:underline"
+                            >
+                                Privacy Policy
+                            </a>.
+                        </label>
+                    </div>
 
                     {/* Submit Button */}
                     <div>
