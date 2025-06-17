@@ -82,7 +82,7 @@ const StandaloneTwitterInput = () => {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Start a new message"
+                    placeholder="Send a message..."
                     className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none py-2.5 px-2"
                     maxRows={5}
                 />
@@ -110,13 +110,15 @@ const CustomChannelHeader = () => {
 
 const ActiveChatWindow = () => {
   return (
-    <div className="h-full flex flex-col">
+    <div className="relative h-full flex flex-col">
       <Channel>
         <CustomChannelHeader />
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto pb-[70px]">
           <MessageList Message={CustomMessage} />
         </div>
-        <StandaloneTwitterInput />
+        <div className="absolute bottom-0 left-0 right-0 bg-black">
+          <StandaloneTwitterInput />
+        </div>
       </Channel>
     </div>
   );
