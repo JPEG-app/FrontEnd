@@ -5,6 +5,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import TweetCard from '../components/tweet/TweetCard';
 import ComposeTweet from '../components/tweet/ComposeTweet';
 import { Tweet, ApiFeedItem, Author } from '../types';
+import { Filter } from 'bad-words';
 
 const mapApiItemToTweet = (apiItem: ApiFeedItem): Tweet => {
   const authorInfo: Author = {
@@ -122,13 +123,26 @@ const HomePage: React.FC = () => {
   }, [author]);
 
   const handleTweetPosted = async (newlyComposedTweet: Tweet) => {
+    const filter = new Filter();
+    
+    const title = newlyComposedTweet.title || "";
+    const content = newlyComposedTweet.content;
+  
+    const isTitleProfane = filter.isProfane(title);
+    const isContentProfane = filter.isProfane(content);
+  
+    if (isTitleProfane || isContentProfane) {
+      setError("Your tweet contains inappropriate language. Please edit and try again.");
+      return;
+    }
+  
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error("Authentication token not found.");
       }
       const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-
+  
       const optimisticallyAddedTweet: Tweet = {
         ...newlyComposedTweet,
         id: `temp-${Date.now()}`,
@@ -137,24 +151,23 @@ const HomePage: React.FC = () => {
         likeCount: 0,
         hasUserLiked: false
       };
-
+  
       setTweets(prevTweets => [optimisticallyAddedTweet, ...prevTweets]);
-      
+  
       const payload = {
         userId: author?.id,
-        title: newlyComposedTweet.title || "",
-        content: newlyComposedTweet.content,
+        title,
+        content,
       };
-
+  
       const postResponse = await axios.post('https://api.jpegapp.lol/posts', payload, authHeader);
       console.log('Tweet posted to backend, will update via Kafka feed', postResponse.data);
-
     } catch (error) {
       console.error('Failed to post tweet to backend:', error);
       setTweets(prevTweets => prevTweets.filter(t => !t.id.startsWith('temp-')));
       setError("Failed to post your tweet. Please try again.");
     }
-  };
+  };  
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">

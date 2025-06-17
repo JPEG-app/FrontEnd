@@ -5,7 +5,6 @@ import {
   Chat,
   ChannelList,
   Channel,
-  Window,
   MessageList,
   useChatContext,
   ChannelPreviewUIComponentProps,
@@ -42,11 +41,14 @@ const CustomMessage = () => {
     else if (messageGroupStyle === "bottom") borderRadiusClasses = isMine ? "rounded-b-2xl rounded-tl-2xl rounded-tr-md" : "rounded-b-2xl rounded-tr-2xl rounded-tl-md";
     else if (messageGroupStyle === "middle") borderRadiusClasses = isMine ? "rounded-l-2xl rounded-r-md" : "rounded-r-2xl rounded-l-md";
 
+    const timeString = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '';
+
     return (
-        <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} my-0.5 px-4`}>
+        <div className={`flex items-end gap-2 my-0.5 px-4 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
             <div className={`max-w-[70%] px-4 py-2 ${borderRadiusClasses} ${isMine ? 'bg-blue-500' : 'bg-gray-700'}`}>
                 <p className="text-white whitespace-pre-wrap break-words">{message.text}</p>
             </div>
+            <p className="text-xs text-gray-500 mb-1">{timeString}</p>
         </div>
     );
 };
@@ -74,7 +76,7 @@ const StandaloneTwitterInput = () => {
     };
 
     return (
-        <div className="p-2 border-t border-gray-700/75 bg-black flex items-center gap-2 sticky bottom-0">
+        <div className="p-2 border-t border-gray-700/75 bg-black flex items-center gap-2">
             <div className="flex-grow bg-gray-800 rounded-2xl flex items-center px-2">
                 <TextareaAutosize
                     value={text}
@@ -110,11 +112,11 @@ const ActiveChatWindow = () => {
   return (
     <div className="h-full flex flex-col">
       <Channel>
-        <Window>
-          <CustomChannelHeader />
+        <CustomChannelHeader />
+        <div className="flex-grow overflow-y-auto">
           <MessageList Message={CustomMessage} />
-          <StandaloneTwitterInput />
-        </Window>
+        </div>
+        <StandaloneTwitterInput />
       </Channel>
     </div>
   );
